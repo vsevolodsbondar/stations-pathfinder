@@ -14,7 +14,7 @@ func FlagHandling() (m.FlagConfig, error) {
 	args := flag.Args()
 
 	if len(args) != 4 {
-		err := fmt.Errorf("Usage: %s [flags] <network-file> <start> <end> <trains>\n")
+		err := fmt.Errorf("Usage: [flags] <network file> <start station> <end station> <train amount>\n")
 		return m.FlagConfig{}, err
 	}
 
