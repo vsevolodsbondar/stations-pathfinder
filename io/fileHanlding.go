@@ -1,4 +1,4 @@
-package helper
+package io
 
 func HandleInitialInputFile(path string) ([]string, error) {
 
