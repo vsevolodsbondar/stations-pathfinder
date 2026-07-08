@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	c "trains/cli"
+)
 
 func main() {
-	fmt.Println("Trains!")
+	conf, err := c.FlagHandling()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(conf.NetworkMapPath)
+	fmt.Println(conf.StartingStation)
+	fmt.Println(conf.EndingStation)
+	fmt.Println(conf.TrainNumb)
 }
