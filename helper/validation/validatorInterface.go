@@ -7,5 +7,5 @@ type AppDataValidator interface {
 }
 
 type FileValidator interface {
-	Validate(rawData []string) bool
+	Validate(rawData []string) (bool, error)
 }
