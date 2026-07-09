@@ -10,8 +10,6 @@ import (
 type StartStationValidator struct{}
 type EndStationValidator struct{}
 type StartEndValidator struct{}
-type DuplicateConnectionsValidator struct{} //test if there is same and if there is the same in reverse
-type DuplicateConnectionsMapValidator struct{}
 type UniqueCoordinatesForStation struct{}
 
 type DuplicateConnectionsSliceValidator struct{}
@@ -57,18 +55,15 @@ func (v DuplicateConnectionsSliceValidator) Validate(connections []string) (bool
 }
 
 func (v UniqueCoordinatesForStation) Validate(appData m.AppData) bool {
+	seen := make(map[string]struct{})
 	for _, station := range appData.NetworkMap {
-		seen := make(map[string]struct{})
+		key := strconv.Itoa(station.X_axis) + "," + strconv.Itoa(station.Y_axis)
 
-		for _, con := range station.Connections {
-			key := strconv.Itoa(con.X_axis) + strconv.Itoa(con.Y_axis)
-
-			if _, ok := seen[key]; ok {
-				return false
-			}
-
-			seen[key] = struct{}{}
+		if _, ok := seen[key]; ok {
+			return false
 		}
+
+		seen[key] = struct{}{}
 	}
 
 	return true
