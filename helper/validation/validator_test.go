@@ -5,6 +5,8 @@ import (
 	m "trains/models"
 )
 
+// run all tests in the project: go test ./...
+
 func mockAppData() m.AppData {
 	station1 := m.Station{
 		Name:   "waterloo",
@@ -40,6 +42,126 @@ func mockAppData() m.AppData {
 	}
 }
 
-func TestShouldFailWhenStartingStationNotPresent(t *testing.T) {
+var startVal = StartStationValidator{}
 
+func TestShouldPassWithValidDataStart(t *testing.T) {
+	data := mockAppData()
+
+	ok := startVal.Validate(data)
+	if !ok {
+		t.Errorf("Should be good with valid data.")
+	}
+}
+
+func TestShouldFailWhenStartingStationNotPresent(t *testing.T) {
+	data := mockAppData()
+	data.StartingStation = m.Station{}
+
+	ok := startVal.Validate(data)
+	if ok {
+		t.Errorf("Should fail with empty starting station.")
+	}
+}
+
+func TestShouldFailWhenStartingStationNotInMap(t *testing.T) {
+	data := mockAppData()
+	data.NetworkMap = make([]m.Station, 0)
+
+	ok := startVal.Validate(data)
+	if ok {
+		t.Errorf("Should fail with empty stations map.")
+	}
+}
+
+var endVal = EndStationValidator{}
+
+func TestShouldPassWithValidDataEnd(t *testing.T) {
+	data := mockAppData()
+
+	ok := endVal.Validate(data)
+	if !ok {
+		t.Errorf("Should be good with valid data.")
+	}
+}
+
+func TestShouldFailWhenEndStationNotPresent(t *testing.T) {
+	data := mockAppData()
+	data.EndingStation = m.Station{}
+
+	ok := endVal.Validate(data)
+	if ok {
+		t.Errorf("Should fail with empty starting station.")
+	}
+}
+
+func TestShouldFailWhenEndStationNotInMap(t *testing.T) {
+	data := mockAppData()
+	data.NetworkMap = make([]m.Station, 0)
+
+	ok := endVal.Validate(data)
+	if ok {
+		t.Errorf("Should fail with empty stations map.")
+	}
+}
+
+var coordVal = UniqueCoordinatesForStation{}
+
+func TestShouldPassWhenCoordinatesWasUnique(t *testing.T) {
+	data := mockAppData()
+
+	ok := coordVal.Validate(data)
+	if !ok {
+		t.Errorf("Should be good with valid data.")
+	}
+}
+
+func TestShouldFailWhenCoordinatesWasntUnique(t *testing.T) {
+	data := mockAppData()
+
+	station3 := m.Station{
+		Name:   "victoria",
+		X_axis: 2,
+		Y_axis: 2,
+	}
+
+	data.NetworkMap[0] = station3
+
+	ok := coordVal.Validate(data)
+	if ok {
+		t.Errorf("Should fail as 1st and 3rd station share same coordinates.")
+	}
+}
+
+var mockValidSliceData = []string{
+	"waterloo-victoria",
+	"waterloo-euston",
+	"st_pancras-euston",
+	"victoria-st_pancras",
+}
+
+var mockInvalidSliceData = []string{
+	"waterloo-victoria",
+	"waterloo-euston",
+	"st_pancras-euston",
+	"victoria-st_pancras",
+	"victoria-waterloo",
+}
+
+var dupVal = DuplicateConnectionsSliceValidator{}
+
+func TestShouldPassWhenConnectionsWasUnique(t *testing.T) {
+	ok, _ := dupVal.Validate(mockValidSliceData)
+	if !ok {
+		t.Errorf("Should be good with valid data.")
+	}
+}
+
+func TestShouldFailWhenConnectionsWasntUnique(t *testing.T) {
+	ok, err := dupVal.Validate(mockInvalidSliceData)
+	if ok {
+		t.Errorf("Should fail with invalid data.")
+	}
+	if err == nil {
+		t.Errorf("Should give info about connection that wasn't unique.")
+	}
 }
