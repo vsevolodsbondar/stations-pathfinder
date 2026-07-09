@@ -16,7 +16,7 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 	}
 	stations := make(map[string]s.Station)
 
-	file, err := os.Open("stations.map")
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, errors.New("Cannot open the file")
 	}
