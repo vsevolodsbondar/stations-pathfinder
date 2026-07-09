@@ -1,6 +1,6 @@
 package models
 
-type AppConfig struct {
+type AppData struct {
 	NetworkMap      []Station
 	StartingStation Station
 	EndingStation   Station
