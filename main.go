@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	c "trains/cli"
-	"trains/io"
+	io "trains/io"
 )
 
 func main() {
@@ -12,7 +12,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(io.HandleInitialInputFile("stations.map"))
+	stations, err := (io.HandleInitialInputFile("stations.map"))
+	if err != nil {
+		log.Fatal()
+	}
+	for _, station := range stations {
+		fmt.Print(station.Name + ": ")
+		for _, con := range station.Connections {
+			fmt.Println(con.Name)
+		}
+		println()
+	}
 	fmt.Println(conf.NetworkMapPath)
 	fmt.Println(conf.StartingStation)
 	fmt.Println(conf.EndingStation)
