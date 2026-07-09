@@ -1,8 +1,10 @@
 package io
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	s "trains/models"
@@ -14,13 +16,21 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 	}
 	stations := make(map[string]s.Station)
 
-	data, err := os.ReadFile(path)
-
+	file, err := os.Open("map.txt")
 	if err != nil {
-		return nil, errors.New("Cannot read file")
+		return nil, errors.New("Cannot open the file")
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fmt.Println(line)
 	}
 
-	fmt.Println(string(data))
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
 
 	return stations, nil
 
@@ -33,7 +43,7 @@ func validateStations(line string) bool {
 		return false
 	}
 	for _, v := range args[0] {
-		if !strings.ContainsRune("abcdefghijklmnopqrstuvwxyz_", v) {
+		if !strings.ContainsRune("abcdefghijklmnopqrstuvwxyz_1234567890", v) {
 			return false
 		}
 	}
