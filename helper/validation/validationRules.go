@@ -11,6 +11,8 @@ type StartStationValidator struct{}
 type EndStationValidator struct{}
 type StartEndValidator struct{}
 type UniqueCoordinatesForStation struct{}
+type StationLineValidator struct{}
+type ConnectionLineValidator struct{}
 
 type DuplicateConnectionsSliceValidator struct{}
 
@@ -69,6 +71,47 @@ func (v UniqueCoordinatesForStation) Validate(appData m.AppData) bool {
 	return true
 }
 
+func (v StationLineValidator) Validate(line string) bool {
+	line = isComment(line)
+	args := strings.Split(line, ",")
+	if len(args) != 3 {
+		return false
+	}
+	for i := range args {
+		args[i] = strings.TrimSpace(args[i])
+	}
+	if !validName(args[0]) {
+		return false
+	}
+	if !validAxis(args[1]) {
+		return false
+	}
+	if !validAxis(args[2]) {
+		println(args[2])
+		return false
+	}
+	return true
+}
+
+func (v ConnectionLineValidator) Validate(line string) bool {
+	line = isComment(line)
+	args := strings.Split(line, "-")
+	if len(args) != 2 {
+		return false
+	}
+	for i := range args {
+		args[i] = strings.TrimSpace(args[i])
+	}
+	if !validName(args[0]) {
+		return false
+	}
+	if !validName(args[1]) {
+		println(args[1])
+		return false
+	}
+	return true
+}
+
 func containsStation(station []m.Station, name string) bool {
 	for _, v := range station {
 		if v.Name == name {
@@ -89,4 +132,35 @@ func normalize(name string) string {
 	}
 
 	return parts[1] + "-" + parts[0]
+}
+
+func validName(name string) bool {
+	if name == "" {
+		return false
+	}
+	for _, v := range name {
+		if !strings.ContainsRune("abcdefghijklmnopqrstuvwxyz_1234567890", v) {
+			return false
+		}
+	}
+	return true
+}
+
+func validAxis(axis string) bool {
+	if axis == "" {
+		return false
+	}
+	for _, v := range axis {
+		if !strings.ContainsRune("1234567890", v) {
+			return false
+		}
+	}
+	return true
+}
+
+func isComment(line string) string {
+	if strings.Contains(line, "#") {
+		line, _, _ = strings.Cut(line, "#")
+	}
+	return line
 }
