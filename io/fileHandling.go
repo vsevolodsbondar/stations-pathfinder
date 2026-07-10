@@ -35,6 +35,7 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 		line = strings.ReplaceAll(line, " ", "")
 		if strings.Contains(line, "stations:") {
 			st = true
+			con = false
 			continue
 		}
 		if strings.Contains(line, "connections:") {
@@ -43,22 +44,26 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 			continue
 		}
 
-		if st {
+		switch {
+		case st:
 			if stValidator.Validate(line) {
 				err := WriteStation(stations, line)
 				if err != nil {
 					return nil, err
 				}
-			} else if !strings.Contains(line, "#") || line != "" {
+			} else if !(strings.Contains(line, "#") || line == "") {
 				return nil, fmt.Errorf("Invalid Station (%s)", line)
 			}
-		}
-		if con {
+		case con:
 			if conValidator.Validate(line) {
 				line = isComment(line)
 				connections = append(connections, line)
-			} else {
+			} else if !(strings.Contains(line, "#") || line == "") {
 				return nil, fmt.Errorf("Invalid connection (%s)", line)
+			}
+		default:
+			if !(strings.Contains(line, "#") || line == "") {
+				return nil, fmt.Errorf("Not commented line (%s)", line)
 			}
 		}
 	}
@@ -76,8 +81,9 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 
 func WriteStation(stations map[string]s.Station, line string) error {
 	var station s.Station
-	if strings.Contains(line, "#") {
-		line, _, _ = strings.Cut(line, "#")
+	st, _, ok := strings.Cut(line, "#")
+	if ok {
+		line = st
 	}
 	args := strings.Split(line, ",")
 	for i := range args {
