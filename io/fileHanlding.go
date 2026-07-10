@@ -45,7 +45,10 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 
 		if st {
 			if stValidator.Validate(line) {
-				WriteStation(stations, line)
+				err := WriteStation(stations, line)
+				if err != nil {
+					return nil, err
+				}
 			} else if !strings.Contains(line, "#") || line != "" {
 				return nil, fmt.Errorf("Invalid Station (%s)", line)
 			}
@@ -71,18 +74,29 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 	return stations, nil
 }
 
-func WriteStation(stations map[string]s.Station, line string) {
+func WriteStation(stations map[string]s.Station, line string) error {
 	var station s.Station
 	if strings.Contains(line, "#") {
 		line, _, _ = strings.Cut(line, "#")
 	}
 	args := strings.Split(line, ",")
-	x, _ := strconv.Atoi(args[1])
-	y, _ := strconv.Atoi(args[1])
+	for i := range args {
+		args[i] = strings.TrimSpace(args[i])
+	}
+	x, err := strconv.Atoi(args[1])
+	if err != nil {
+		return fmt.Errorf("X-axis parsing error: %s", err)
+	}
+	y, err := strconv.Atoi(args[2])
+	if err != nil {
+		return fmt.Errorf("Y-axis parsing error: %s", err)
+	}
 	station.Name = args[0]
 	station.X_axis = x
 	station.Y_axis = y
 	stations[args[0]] = station
+
+	return nil
 }
 
 func WriteConnections(stations map[string]s.Station, connections []string) {
