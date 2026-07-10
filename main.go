@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	c "trains/cli"
 	io "trains/io"
 )
@@ -12,9 +13,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stations, err := (io.HandleInitialInputFile("stations.map"))
+	stations, err := (io.HandleInitialInputFile(conf.NetworkMapPath))
 	if err != nil {
-		log.Fatal()
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	for _, station := range stations {
 		fmt.Print(station.Name + ": ")

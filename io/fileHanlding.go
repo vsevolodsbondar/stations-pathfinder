@@ -13,6 +13,8 @@ import (
 
 func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 	var conDuplicates v.DuplicateConnectionsSliceValidator
+	var stValidator v.StationLineValidator
+	var conValidator v.ConnectionLineValidator
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return nil, errors.New("File does not exist")
 	}
@@ -42,15 +44,15 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 		}
 
 		if st {
-			if ValidateStations(line) {
+			if stValidator.Validate(line) {
 				WriteStation(stations, line)
-			} else {
+			} else if !strings.Contains(line, "#") || line != "" {
 				return nil, fmt.Errorf("Invalid Station (%s)", line)
 			}
 		}
 		if con {
-			if ValidateConnections(line) {
-				line = IsComment(line)
+			if conValidator.Validate(line) {
+				line = isComment(line)
 				connections = append(connections, line)
 			} else {
 				return nil, fmt.Errorf("Invalid connection (%s)", line)
@@ -69,39 +71,6 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 	return stations, nil
 }
 
-func ValidateStations(line string) bool {
-	line = IsComment(line)
-	args := strings.Split(line, ",")
-	if len(args) != 3 {
-		return false
-	}
-	if !ValidName(args[0]) {
-		return false
-	}
-	if !ValidAxis(args[1]) {
-		return false
-	}
-	if !ValidAxis(args[2]) {
-		return false
-	}
-	return true
-}
-
-func ValidateConnections(line string) bool {
-	line = IsComment(line)
-	args := strings.Split(line, "-")
-	if len(args) != 2 {
-		return false
-	}
-	if !ValidName(args[0]) {
-		return false
-	}
-	if !ValidName(args[1]) {
-		return false
-	}
-	return true
-}
-
 func WriteStation(stations map[string]s.Station, line string) {
 	var station s.Station
 	if strings.Contains(line, "#") {
@@ -114,13 +83,6 @@ func WriteStation(stations map[string]s.Station, line string) {
 	station.X_axis = x
 	station.Y_axis = y
 	stations[args[0]] = station
-}
-
-func IsComment(line string) string {
-	if strings.Contains(line, "#") {
-		line, _, _ = strings.Cut(line, "#")
-	}
-	return line
 }
 
 func WriteConnections(stations map[string]s.Station, connections []string) {
@@ -138,20 +100,9 @@ func WriteConnections(stations map[string]s.Station, connections []string) {
 	}
 }
 
-func ValidName(name string) bool {
-	for _, v := range name {
-		if !strings.ContainsRune("abcdefghijklmnopqrstuvwxyz_1234567890", v) {
-			return false
-		}
+func isComment(line string) string {
+	if strings.Contains(line, "#") {
+		line, _, _ = strings.Cut(line, "#")
 	}
-	return true
-}
-
-func ValidAxis(axis string) bool {
-	for _, v := range axis {
-		if !strings.ContainsRune("1234567890", v) {
-			return false
-		}
-	}
-	return true
+	return line
 }
