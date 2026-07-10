@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -53,7 +52,6 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 					return nil, err
 				}
 			} else if !(strings.Contains(line, "#") || line == "") {
-				fmt.Println(strings.Contains(line, "#"))
 				return nil, fmt.Errorf("Invalid Station (%s)", line)
 			}
 		case con:
@@ -83,10 +81,9 @@ func HandleInitialInputFile(path string) (map[string]s.Station, error) {
 
 func WriteStation(stations map[string]s.Station, line string) error {
 	var station s.Station
-	st, comment, ok := strings.Cut(line, "#")
+	st, _, ok := strings.Cut(line, "#")
 	if ok {
 		line = st
-		log.Print(comment)
 	}
 	args := strings.Split(line, ",")
 	for i := range args {
