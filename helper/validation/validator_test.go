@@ -132,24 +132,15 @@ func TestShouldFailWhenCoordinatesWasntUnique(t *testing.T) {
 	}
 }
 
-var mockValidSliceData = []string{
-	"waterloo-victoria",
-	"waterloo-euston",
-	"st_pancras-euston",
-	"victoria-st_pancras",
-}
-
-var mockInvalidSliceData = []string{
-	"waterloo-victoria",
-	"waterloo-euston",
-	"st_pancras-euston",
-	"victoria-st_pancras",
-	"victoria-waterloo",
-}
-
 var dupVal = DuplicateConnectionsSliceValidator{}
 
 func TestShouldPassWhenConnectionsWasUnique(t *testing.T) {
+	var mockValidSliceData = []string{
+		"waterloo-victoria",
+		"waterloo-euston",
+		"st_pancras-euston",
+		"victoria-st_pancras",
+	}
 	ok, _ := dupVal.Validate(mockValidSliceData)
 	if !ok {
 		t.Errorf("Should be good with valid data.")
@@ -157,11 +148,86 @@ func TestShouldPassWhenConnectionsWasUnique(t *testing.T) {
 }
 
 func TestShouldFailWhenConnectionsWasntUnique(t *testing.T) {
+	var mockInvalidSliceData = []string{
+		"waterloo-victoria",
+		"waterloo-euston",
+		"st_pancras-euston",
+		"victoria-st_pancras",
+		"victoria-waterloo",
+	}
 	ok, err := dupVal.Validate(mockInvalidSliceData)
 	if ok {
 		t.Errorf("Should fail with invalid data.")
 	}
 	if err == nil {
 		t.Errorf("Should give info about connection that wasn't unique.")
+	}
+}
+
+var stLineVal StationLineValidator
+
+func TestShouldPassWhenStationLineIsCorrect(t *testing.T) {
+	ok := stLineVal.Validate("waterloo,2,5")
+	if !ok {
+		t.Errorf("Should pass with valid station line")
+	}
+	ok = stLineVal.Validate("waterloo,2,5 #international")
+	if !ok {
+		t.Errorf("Should pass if line contains comment")
+	}
+}
+
+func TestShouldFailWhenStationLineNameIsIncorrect(t *testing.T) {
+	mockInvalidLines := []string{
+		"w-terloo,2,5",
+		",2,4",
+		"waterloo,,2,5",
+	}
+	for _, line := range mockInvalidLines {
+		ok := stLineVal.Validate(line)
+		if ok {
+			t.Errorf("Should fail with invalid station name (%s)", line)
+		}
+	}
+}
+
+func TestShouldFailWhenStationLineXAxisIsIncorrect(t *testing.T) {
+	mockInvalidLines := []string{
+		"waterloo,,5",
+		"waterloo,0.5,4",
+		"waterloo,abc,5",
+	}
+	for _, line := range mockInvalidLines {
+		ok := stLineVal.Validate(line)
+		if ok {
+			t.Errorf("Should fail with invalid station name (%s)", line)
+		}
+	}
+}
+
+func TestShouldFailWhenStationLineYAxisIsIncorrect(t *testing.T) {
+	mockInvalidLines := []string{
+		"waterloo,2,",
+		"waterloo,2,0.4",
+		"waterloo,2,abc",
+	}
+	for _, line := range mockInvalidLines {
+		ok := stLineVal.Validate(line)
+		if ok {
+			t.Errorf("Should fail with invalid station name (%s)", line)
+		}
+	}
+}
+
+var conLineVal ConnectionLineValidator
+
+func TestShouldPassWhenConnectionLineIsCorrect(t *testing.T) {
+	ok := conLineVal.Validate("waterloo-london")
+	if !ok {
+		t.Errorf("Should pass with valid station line")
+	}
+	ok = conLineVal.Validate("waterloo-london #international")
+	if !ok {
+		t.Errorf("Should pass if line contains comment")
 	}
 }
