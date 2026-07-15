@@ -12,17 +12,12 @@ func main() {
 	//go run . -feature test2.map jungle desert 5
 	conf, err := c.FlagHandling()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error: ", err)
 	}
 
-	// appData, err := c.DataConfiguration(conf)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	appData, err := c.DataConfiguration2(conf)
+	appData, err := c.DataConfiguration(conf)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error: ", err)
 	}
 
 	for _, v := range appData.NetworkMap {
@@ -33,8 +28,7 @@ func main() {
 	}
 
 	res := p.BigFuckingSearch(appData)
-	fmt.Println("result:", res)
-	// for _, v := range res {
-	// 	fmt.Println(v)
-	// }
+	for _, v := range res {
+		fmt.Println(v)
+	}
 }

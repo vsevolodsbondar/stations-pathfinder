@@ -18,6 +18,10 @@ type DuplicateConnectionsSliceValidator struct{}
 
 func (v StartStationValidator) Validate(appData m.AppData) bool {
 	// checking some fields to make shure that it was initialized
+	if appData.StartingStation == nil {
+		return false
+	}
+
 	if appData.StartingStation.Connections == nil {
 		return false
 	}
@@ -29,6 +33,10 @@ func (v StartStationValidator) Validate(appData m.AppData) bool {
 }
 
 func (v EndStationValidator) Validate(appData m.AppData) bool {
+	if appData.EndingStation == nil {
+		return false
+	}
+
 	if appData.EndingStation.Connections == nil {
 		return false
 	}
@@ -112,7 +120,7 @@ func (v ConnectionLineValidator) Validate(line string) bool {
 	return true
 }
 
-func containsStation(station []m.Station, name string) bool {
+func containsStation(station []*m.Station, name string) bool {
 	for _, v := range station {
 		if v.Name == name {
 			return true

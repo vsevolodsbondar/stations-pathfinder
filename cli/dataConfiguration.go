@@ -15,7 +15,7 @@ func DataConfiguration(conf m.FlagConfig) (m.AppData, error) {
 		return appData, err
 	}
 
-	var stationsSlice []m.Station
+	var stationsSlice []*m.Station
 
 	for _, v := range stations {
 		stationsSlice = append(stationsSlice, v)
@@ -30,33 +30,6 @@ func DataConfiguration(conf m.FlagConfig) (m.AppData, error) {
 	if !ok {
 		return m.AppData{}, fmt.Errorf("Some issue with input data.")
 	}
-
-	return appData, nil
-}
-
-func DataConfiguration2(conf m.FlagConfig) (m.AppDataPointer, error) {
-	appData := m.AppDataPointer{}
-
-	stations, err := (io.HandleInitialInputFileWithPointer(conf.NetworkMapPath))
-	if err != nil {
-		return appData, err
-	}
-
-	var stationsSlice []m.PointerStation
-
-	for _, v := range stations {
-		stationsSlice = append(stationsSlice, *v)
-	}
-
-	appData.NetworkMap = stationsSlice
-	appData.StartingStation = *stations[conf.StartingStation]
-	appData.EndingStation = *stations[conf.EndingStation]
-	appData.TrainNumb = conf.TrainNumb
-
-	// ok := val.ValidateWithAllRules(appData)
-	// if !ok {
-	// 	return m.AppData{}, fmt.Errorf("Some issue with input data.")
-	// }
 
 	return appData, nil
 }

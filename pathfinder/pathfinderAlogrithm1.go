@@ -6,7 +6,7 @@ import (
 
 // dfs + backtracking
 // [][]string to just show Station.Name
-func BigFuckingSearch(appData m.AppDataPointer) [][]string {
+func BigFuckingSearch(appData m.AppData) [][]string {
 	res := [][]string{}
 	visited := make(map[string]bool)
 
@@ -16,9 +16,9 @@ func BigFuckingSearch(appData m.AppDataPointer) [][]string {
 	// in loop call of the recursion
 
 	path := []string{appData.StartingStation.Name}
-	var recursion func([]string, m.PointerStation)
+	var recursion func([]string, *m.Station)
 
-	recursion = func(path []string, current m.PointerStation) {
+	recursion = func(path []string, current *m.Station) {
 		if current.Name == appData.EndingStation.Name {
 			res = append(res, path)
 			return
@@ -33,7 +33,7 @@ func BigFuckingSearch(appData m.AppDataPointer) [][]string {
 				continue
 			}
 
-			recursion(newPath, *v)
+			recursion(newPath, v)
 		}
 
 		visited[current.Name] = false
