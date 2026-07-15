@@ -3,30 +3,25 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	c "trains/cli"
-	io "trains/io"
 )
 
 func main() {
+	//go run . -feature stations.map waterloo euston 5
 	conf, err := c.FlagHandling()
 	if err != nil {
 		log.Fatal(err)
 	}
-	stations, err := (io.HandleInitialInputFile(conf.NetworkMapPath))
+
+	appData, err := c.DataConfiguration(conf)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
-	for _, station := range stations {
-		fmt.Print(station.Name + ": ")
-		for _, con := range station.Connections {
-			fmt.Println(con.Name)
+
+	for _, v := range appData.NetworkMap {
+		fmt.Println("Station:", v.Name)
+		for _, con := range v.Connections {
+			fmt.Println("Connection:", con.Name)
 		}
-		println()
 	}
-	fmt.Println(conf.NetworkMapPath)
-	fmt.Println(conf.StartingStation)
-	fmt.Println(conf.EndingStation)
-	fmt.Println(conf.TrainNumb)
 }
