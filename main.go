@@ -27,8 +27,9 @@ func main() {
 		}
 	}
 
-	res := p.BigFuckingSearch(appData)
+	res := p.DFSRangeRoutes(appData)
 	for _, v := range res {
-		fmt.Println(v)
+		fmt.Println(v.Route)
+		fmt.Println(v.Distance)
 	}
 }
