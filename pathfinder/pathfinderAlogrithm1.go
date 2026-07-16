@@ -2,11 +2,11 @@ package pathfinder
 
 import (
 	"math"
+	"slices"
 	m "trains/models"
 )
 
 // dfs + backtracking
-// [][]string to just show Station.Name
 func DFS(appData m.AppData) [][]string {
 	res := [][]string{}
 	visited := make(map[string]bool)
@@ -16,7 +16,7 @@ func DFS(appData m.AppData) [][]string {
 	// if not - for loop on all conections
 	// in loop call of the recursion
 
-	route := []string{appData.StartingStation.Name}
+	startingRoute := []string{appData.StartingStation.Name}
 	var recursion func([]string, *m.Station)
 
 	recursion = func(route []string, current *m.Station) {
@@ -45,33 +45,35 @@ func DFS(appData m.AppData) [][]string {
 		visited[current.Name] = false
 	}
 
-	recursion(route, appData.StartingStation)
+	recursion(startingRoute, appData.StartingStation)
 
 	return res
 }
 
-func DFSRangeRoutes(appData m.AppData) map[int]m.Route {
+func DFSRangeRoutes(appData m.AppData) []m.Route {
 	paths := DFS(appData)
 
-	res := make(map[int]m.Route)
+	res := []m.Route{}
 
-	for i, p := range paths {
-		route := pathDistance(appData, p)
+	for _, p := range paths {
+		route := pathsDistance(appData, p)
 
-		res[i] = route
+		res = append(res, route)
 	}
+
+	res = sortRoutesByDistance(res)
 
 	return res
 }
 
-func pathDistance(appData m.AppData, path []string) m.Route {
+func pathsDistance(appData m.AppData, path []string) m.Route {
 	var distance float64
 
 	for i := 0; i < len(path)-1; i++ {
 		from := appData.FindStationByName(path[i])
 		to := appData.FindStationByName(path[i+1])
 
-		distance += findDistance(from, to)
+		distance += findDistanceBetweenPoints(from, to)
 	}
 
 	return m.Route{
@@ -80,11 +82,27 @@ func pathDistance(appData m.AppData, path []string) m.Route {
 	}
 }
 
-func findDistance(station1, station2 *m.Station) float64 {
+func findDistanceBetweenPoints(station1, station2 *m.Station) float64 {
 	diffX := float64(station1.X_axis - station2.X_axis)
 	diffY := float64(station1.Y_axis - station2.Y_axis)
 
 	distance := math.Sqrt(diffX*diffX + diffY*diffY)
 
 	return distance
+}
+
+func sortRoutesByDistance(routes []m.Route) []m.Route {
+	slices.SortFunc(routes, func(a, b m.Route) int {
+		if a.Distance < b.Distance {
+			return -1
+		}
+
+		if a.Distance > b.Distance {
+			return 1
+		}
+
+		return 0
+	})
+
+	return routes
 }
