@@ -10,6 +10,5 @@ st_pancras,5,15 # international
 
 connections:
 waterloo -victoria
-waterloo- euston
-st_pancras-euston
+waterloo- st_pancras
 victoria-st_pancras

@@ -1,13 +1,14 @@
 package pathfinder
 
 import (
+	"fmt"
 	"math"
 	"slices"
 	m "trains/models"
 )
 
 // dfs + backtracking
-func DFS(appData m.AppData) [][]string {
+func DFS(appData m.AppData) ([][]string, error) {
 	res := [][]string{}
 	visited := make(map[string]bool)
 
@@ -47,11 +48,17 @@ func DFS(appData m.AppData) [][]string {
 
 	recursion(startingRoute, appData.StartingStation)
 
-	return res
+	if len(res) == 0 {
+		return nil, fmt.Errorf("There is no route that reaches ending station.")
+	}
+	return res, nil
 }
 
-func DFSRangeRoutes(appData m.AppData) []m.Route {
-	paths := DFS(appData)
+func DFSRangeRoutes(appData m.AppData) ([]m.Route, error) {
+	paths, err := DFS(appData)
+	if err != nil {
+		return nil, err
+	}
 
 	res := []m.Route{}
 
@@ -63,7 +70,7 @@ func DFSRangeRoutes(appData m.AppData) []m.Route {
 
 	res = sortRoutesByDistance(res)
 
-	return res
+	return res, nil
 }
 
 func pathsDistance(appData m.AppData, path []string) m.Route {
@@ -106,3 +113,7 @@ func sortRoutesByDistance(routes []m.Route) []m.Route {
 
 	return routes
 }
+
+// func findCrossingRoutes(routes []m.Route) []m.Route {
+
+// }

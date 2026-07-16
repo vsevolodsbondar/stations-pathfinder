@@ -9,7 +9,7 @@ import (
 
 func main() {
 	//go run . -feature stations.map waterloo euston 5
-	//go run . -feature test2.map jungle desert 5
+	//go run . -feature jungle-desert.map jungle desert 5
 	conf, err := c.FlagHandling()
 	if err != nil {
 		log.Fatal("Error: ", err)
@@ -27,7 +27,11 @@ func main() {
 		}
 	}
 
-	res := p.DFSRangeRoutes(appData)
+	res, err := p.DFSRangeRoutes(appData)
+	if err != nil {
+		log.Fatal("Error: ", err)
+	}
+
 	for _, v := range res {
 		fmt.Println(v.Route)
 		fmt.Println(v.Distance)
