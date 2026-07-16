@@ -15,7 +15,7 @@ func DataConfiguration(conf m.FlagConfig) (m.AppData, error) {
 		return appData, err
 	}
 
-	var stationsSlice []m.Station
+	var stationsSlice []*m.Station
 
 	for _, v := range stations {
 		stationsSlice = append(stationsSlice, v)
