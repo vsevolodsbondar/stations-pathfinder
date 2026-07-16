@@ -97,7 +97,7 @@ func BenchmarkFindPathsWithBinaryData(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		DFSRangeRoutes(g)
+		DFSRangedRoutes(g)
 	}
 }
 
@@ -107,6 +107,6 @@ func BenchmarkFindPathsWithLargeData(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		DFSRangeRoutes(g)
+		DFSRangedRoutes(g)
 	}
 }

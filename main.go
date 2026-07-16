@@ -27,12 +27,13 @@ func main() {
 		}
 	}
 
-	res, err := p.DFSRangeRoutes(appData)
+	res, err := p.DFSRangedRoutes(appData)
 	if err != nil {
 		log.Fatal("Error: ", err)
 	}
 
 	for _, v := range res {
+		// fmt.Println(v.ID)
 		fmt.Println(v.Route)
 		fmt.Println(v.Distance)
 	}

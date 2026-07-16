@@ -2,8 +2,8 @@ package pathfinder
 
 import (
 	"fmt"
-	"math"
-	"slices"
+	d "trains/helper/distanceCalculations"
+	h "trains/helper/routeUtils"
 	m "trains/models"
 )
 
@@ -54,7 +54,7 @@ func DFS(appData m.AppData) ([][]string, error) {
 	return res, nil
 }
 
-func DFSRangeRoutes(appData m.AppData) ([]m.Route, error) {
+func DFSRangedRoutes(appData m.AppData) ([]m.Route, error) {
 	paths, err := DFS(appData)
 	if err != nil {
 		return nil, err
@@ -62,58 +62,14 @@ func DFSRangeRoutes(appData m.AppData) ([]m.Route, error) {
 
 	res := []m.Route{}
 
-	for _, p := range paths {
-		route := pathsDistance(appData, p)
+	for i, p := range paths {
+		route := d.PathsDistance(appData, p)
+		route.ID = i + 1
 
 		res = append(res, route)
 	}
 
-	res = sortRoutesByDistance(res)
+	res = h.SortRoutesByDistance(res)
 
 	return res, nil
 }
-
-func pathsDistance(appData m.AppData, path []string) m.Route {
-	var distance float64
-
-	for i := 0; i < len(path)-1; i++ {
-		from := appData.FindStationByName(path[i])
-		to := appData.FindStationByName(path[i+1])
-
-		distance += findDistanceBetweenPoints(from, to)
-	}
-
-	return m.Route{
-		Route:    path,
-		Distance: distance,
-	}
-}
-
-func findDistanceBetweenPoints(station1, station2 *m.Station) float64 {
-	diffX := float64(station1.X_axis - station2.X_axis)
-	diffY := float64(station1.Y_axis - station2.Y_axis)
-
-	distance := math.Sqrt(diffX*diffX + diffY*diffY)
-
-	return distance
-}
-
-func sortRoutesByDistance(routes []m.Route) []m.Route {
-	slices.SortFunc(routes, func(a, b m.Route) int {
-		if a.Distance < b.Distance {
-			return -1
-		}
-
-		if a.Distance > b.Distance {
-			return 1
-		}
-
-		return 0
-	})
-
-	return routes
-}
-
-// func findCrossingRoutes(routes []m.Route) []m.Route {
-
-// }
