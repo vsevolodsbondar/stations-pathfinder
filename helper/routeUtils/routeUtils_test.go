@@ -1,7 +1,6 @@
 package routeutils
 
 import (
-	"fmt"
 	"testing"
 	m "trains/models"
 )
@@ -69,9 +68,6 @@ func TestShouldAddCrossingRoutesCorrectly(t *testing.T) {
 	data := mockRoutes()
 
 	findCrossingRoutes(data)
-	for _, v := range data {
-		fmt.Println(v)
-	}
 
 	if len(data[0].CrossingRoutes) == 0 {
 		t.Errorf("Should have crossing routes data.")

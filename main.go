@@ -20,21 +20,15 @@ func main() {
 		log.Fatal("Error: ", err)
 	}
 
-	for _, v := range appData.NetworkMap {
-		fmt.Println("Station:", v.Name)
-		for _, con := range v.Connections {
-			fmt.Println("Connection:", con.Name)
-		}
-	}
-
-	res, err := p.DFSRangedRoutes(appData)
+	res, err := p.DFSRangedRouteSets(appData)
 	if err != nil {
 		log.Fatal("Error: ", err)
 	}
 
-	for _, v := range res {
-		// fmt.Println(v.ID)
-		fmt.Println(v.Route)
-		fmt.Println(v.Distance)
+	for i, v := range res {
+		fmt.Println("Set", i+1, ":")
+		for _, r := range v {
+			r.PrintRoute()
+		}
 	}
 }

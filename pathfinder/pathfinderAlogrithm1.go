@@ -54,7 +54,7 @@ func DFS(appData m.AppData) ([][]string, error) {
 	return res, nil
 }
 
-func DFSRangedRoutes(appData m.AppData) ([]m.Route, error) {
+func DFSRangedRouteSets(appData m.AppData) ([][]m.Route, error) {
 	paths, err := DFS(appData)
 	if err != nil {
 		return nil, err
@@ -65,11 +65,12 @@ func DFSRangedRoutes(appData m.AppData) ([]m.Route, error) {
 	for i, p := range paths {
 		route := d.PathsDistance(appData, p)
 		route.ID = i + 1
+		route.CrossingRoutes = map[int]struct{}{}
 
 		res = append(res, route)
 	}
 
-	res = h.SortRoutesByDistance(res)
+	m := h.FindUniqueRouteSets(res)
 
-	return res, nil
+	return m, nil
 }

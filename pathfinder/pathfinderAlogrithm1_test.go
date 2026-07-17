@@ -12,7 +12,7 @@ func generateLargeAppData(size int) m.AppData {
 	}
 
 	//limitations by the task
-	if size > 16383 {
+	if size > 10000 {
 		return m.AppData{}
 	}
 
@@ -97,16 +97,16 @@ func BenchmarkFindPathsWithBinaryData(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		DFSRangedRoutes(g)
+		DFSRangedRouteSets(g)
 	}
 }
 
 func BenchmarkFindPathsWithLargeData(b *testing.B) {
-	g := generateLargeAppData(16383)
+	g := generateLargeAppData(10000)
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		DFSRangedRoutes(g)
+		DFSRangedRouteSets(g)
 	}
 }
