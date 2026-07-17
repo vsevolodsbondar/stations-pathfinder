@@ -1,6 +1,4 @@
 package pathfinder
-<<<<<<< HEAD
-=======
 
 import (
 	m "trains/models"
@@ -24,4 +22,3 @@ func BFS(appData m.AppData) []string {
 	}
 	return res
 }
->>>>>>> 504b1aa (algorithm 2 updated)
