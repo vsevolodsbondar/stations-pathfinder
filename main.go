@@ -25,11 +25,9 @@ func main() {
 	if err != nil {
 		log.Fatal("Error: ", err)
 	}
-
-	for i, v := range res {
-		fmt.Println("Set", i+1, ":")
-		for _, r := range v {
-			r.PrintRoute()
-		}
+	//res := p.BigFuckingSearch(appData)
+	write := p.MySearch(appData)
+	for _, v := range write {
+		fmt.Println(v)
 	}
 }
