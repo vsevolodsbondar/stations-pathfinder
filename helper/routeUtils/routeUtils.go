@@ -21,6 +21,7 @@ func sortRoutesByDistance(routes []m.Route) []m.Route {
 	return routes
 }
 
+// for determining if there some overlaping of the routes
 func findCrossingRoutes(routes []m.Route) []m.Route {
 	for i, _ := range routes {
 		for j := i + 1; j < len(routes); j++ {

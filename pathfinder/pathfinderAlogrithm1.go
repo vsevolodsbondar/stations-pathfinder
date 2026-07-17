@@ -23,23 +23,25 @@ func DFS(appData m.AppData) ([][]string, error) {
 	recursion = func(route []string, current *m.Station) {
 		//base case
 		if current.Name == appData.EndingStation.Name {
-			res = append(res, route)
+			finished := append([]string{}, route...)
+			res = append(res, finished)
 			return
 		}
 
 		//will be checking if I already checked all connections of particular station
-		//helps to avoid loops (already had to reboot PC once)
+		//helps to avoid loops in current path (already had to reboot PC once)
 		visited[current.Name] = true
 		for _, v := range current.Connections {
-			copyOfPrevRoute := append([]string{}, route...)
-			newRoute := append(copyOfPrevRoute, v.Name)
-
 			//stoping here if visited
 			if visited[v.Name] {
 				continue
 			}
 
-			recursion(newRoute, v)
+			route = append(route, v.Name)
+
+			recursion(route, v)
+
+			route = route[:len(route)-1]
 		}
 
 		//checked all connections for the station, unblocking
