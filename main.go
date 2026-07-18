@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	c "trains/cli"
 	p "trains/pathfinder"
 )
@@ -15,9 +16,12 @@ func main() {
 		log.Fatal("Error: ", err)
 	}
 
-	appData, err := c.DataConfiguration(conf)
-	if err != nil {
-		log.Fatal("Error: ", err)
+	appData, errs := c.DataConfiguration(conf)
+	if len(errs) > 0 {
+		for _, err := range errs {
+			log.Println(err)
+		}
+		os.Exit(1)
 	}
 
 	for _, v := range appData.NetworkMap {

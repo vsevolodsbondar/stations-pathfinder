@@ -47,7 +47,7 @@ var startVal = StartStationValidator{}
 func TestShouldPassWithValidDataStart(t *testing.T) {
 	data := mockAppData()
 
-	ok := startVal.Validate(data)
+	ok, _ := startVal.Validate(data)
 	if !ok {
 		t.Errorf("Should be good with valid data.")
 	}
@@ -57,7 +57,7 @@ func TestShouldFailWhenStartingStationNotPresent(t *testing.T) {
 	data := mockAppData()
 	data.StartingStation = &m.Station{}
 
-	ok := startVal.Validate(data)
+	ok, _ := startVal.Validate(data)
 	if ok {
 		t.Errorf("Should fail with empty starting station.")
 	}
@@ -67,7 +67,7 @@ func TestShouldFailWhenStartingStationNotInMap(t *testing.T) {
 	data := mockAppData()
 	data.NetworkMap = make([]*m.Station, 0)
 
-	ok := startVal.Validate(data)
+	ok, _ := startVal.Validate(data)
 	if ok {
 		t.Errorf("Should fail with empty stations map.")
 	}
@@ -78,7 +78,7 @@ var endVal = EndStationValidator{}
 func TestShouldPassWithValidDataEnd(t *testing.T) {
 	data := mockAppData()
 
-	ok := endVal.Validate(data)
+	ok, _ := endVal.Validate(data)
 	if !ok {
 		t.Errorf("Should be good with valid data.")
 	}
@@ -88,7 +88,7 @@ func TestShouldFailWhenEndStationNotPresent(t *testing.T) {
 	data := mockAppData()
 	data.EndingStation = &m.Station{}
 
-	ok := endVal.Validate(data)
+	ok, _ := endVal.Validate(data)
 	if ok {
 		t.Errorf("Should fail with empty starting station.")
 	}
@@ -98,7 +98,7 @@ func TestShouldFailWhenEndStationNotInMap(t *testing.T) {
 	data := mockAppData()
 	data.NetworkMap = make([]*m.Station, 0)
 
-	ok := endVal.Validate(data)
+	ok, _ := endVal.Validate(data)
 	if ok {
 		t.Errorf("Should fail with empty stations map.")
 	}
@@ -109,7 +109,7 @@ var coordVal = UniqueCoordinatesForStation{}
 func TestShouldPassWhenCoordinatesWasUnique(t *testing.T) {
 	data := mockAppData()
 
-	ok := coordVal.Validate(data)
+	ok, _ := coordVal.Validate(data)
 	if !ok {
 		t.Errorf("Should be good with valid data.")
 	}
@@ -126,7 +126,7 @@ func TestShouldFailWhenCoordinatesWasntUnique(t *testing.T) {
 
 	data.NetworkMap[0] = station3
 
-	ok := coordVal.Validate(data)
+	ok, _ := coordVal.Validate(data)
 	if ok {
 		t.Errorf("Should fail as 1st and 3rd station share same coordinates.")
 	}
@@ -167,11 +167,11 @@ func TestShouldFailWhenConnectionsWasntUnique(t *testing.T) {
 var stLineVal StationLineValidator
 
 func TestShouldPassWhenStationLineIsCorrect(t *testing.T) {
-	ok := stLineVal.Validate("waterloo,2,5")
+	ok, _ := stLineVal.Validate("waterloo,2,5")
 	if !ok {
 		t.Errorf("Should pass with valid station line")
 	}
-	ok = stLineVal.Validate("waterloo,2,5 #international")
+	ok, _ = stLineVal.Validate("waterloo,2,5 #international")
 	if !ok {
 		t.Errorf("Should pass if line contains comment")
 	}
@@ -184,7 +184,7 @@ func TestShouldFailWhenStationLineNameIsIncorrect(t *testing.T) {
 		"waterloo,,2,5",
 	}
 	for _, line := range mockInvalidLines {
-		ok := stLineVal.Validate(line)
+		ok, _ := stLineVal.Validate(line)
 		if ok {
 			t.Errorf("Should fail with invalid station name (%s)", line)
 		}
@@ -198,7 +198,7 @@ func TestShouldFailWhenStationLineXAxisIsIncorrect(t *testing.T) {
 		"waterloo,abc,5",
 	}
 	for _, line := range mockInvalidLines {
-		ok := stLineVal.Validate(line)
+		ok, _ := stLineVal.Validate(line)
 		if ok {
 			t.Errorf("Should fail with invalid station name (%s)", line)
 		}
@@ -212,7 +212,7 @@ func TestShouldFailWhenStationLineYAxisIsIncorrect(t *testing.T) {
 		"waterloo,2,abc",
 	}
 	for _, line := range mockInvalidLines {
-		ok := stLineVal.Validate(line)
+		ok, _ := stLineVal.Validate(line)
 		if ok {
 			t.Errorf("Should fail with invalid station name (%s)", line)
 		}
@@ -222,11 +222,11 @@ func TestShouldFailWhenStationLineYAxisIsIncorrect(t *testing.T) {
 var conLineVal ConnectionLineValidator
 
 func TestShouldPassWhenConnectionLineIsCorrect(t *testing.T) {
-	ok := conLineVal.Validate("waterloo-london")
+	ok, _ := conLineVal.Validate("waterloo-london")
 	if !ok {
 		t.Errorf("Should pass with valid station line")
 	}
-	ok = conLineVal.Validate("waterloo-london #international")
+	ok, _ = conLineVal.Validate("waterloo-london #international")
 	if !ok {
 		t.Errorf("Should pass if line contains comment")
 	}

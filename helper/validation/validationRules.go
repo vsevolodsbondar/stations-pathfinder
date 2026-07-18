@@ -16,108 +16,161 @@ type ConnectionLineValidator struct{}
 
 type DuplicateConnectionsSliceValidator struct{}
 
-func (v StartStationValidator) Validate(appData m.AppData) bool {
+func (v StartStationValidator) Validate(appData m.AppData) (bool, []error) {
+	valid := true
+	errs := []error{}
+
 	// checking some fields to make shure that it was initialized
 	if appData.StartingStation == nil {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Starting station can't be empty."))
 	}
 
 	if appData.StartingStation.Connections == nil {
-		return false
-	}
-	if !containsStation(appData.NetworkMap, appData.StartingStation.Name) {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Starting station doesn't connect to anything."))
 	}
 
-	return true
+	if !containsStation(appData.NetworkMap, appData.StartingStation.Name) {
+		valid = false
+		errs = append(errs, fmt.Errorf("Starting station is not in the graph."))
+	}
+
+	return valid, errs
 }
 
-func (v EndStationValidator) Validate(appData m.AppData) bool {
+func (v EndStationValidator) Validate(appData m.AppData) (bool, []error) {
+	valid := true
+	errs := []error{}
+
 	if appData.EndingStation == nil {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Ending station can't be empty."))
 	}
 
 	if appData.EndingStation.Connections == nil {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Ending station doesn't connect to anything."))
 	}
 
 	if !containsStation(appData.NetworkMap, appData.EndingStation.Name) {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Ending station is not in the graph."))
 	}
 
-	return true
+	return valid, errs
 }
 
-func (v DuplicateConnectionsSliceValidator) Validate(connections []string) (bool, error) {
+func (v DuplicateConnectionsSliceValidator) Validate(connections []string) (bool, []error) {
+	valid := true
+	errs := []error{}
+
 	seen := make(map[string]struct{})
 
 	for _, con := range connections {
 		key := normalize(con)
 
 		if _, ok := seen[key]; ok {
-			return false, fmt.Errorf("Was seen already: %s", key)
+			valid = false
+			errs = append(errs, fmt.Errorf("Was seen already: %s", key))
 		}
 
 		seen[key] = struct{}{}
 	}
 
-	return true, nil
+	return valid, errs
 }
 
-func (v UniqueCoordinatesForStation) Validate(appData m.AppData) bool {
-	seen := make(map[string]struct{})
+func (v UniqueCoordinatesForStation) Validate(appData m.AppData) (bool, []error) {
+	valid := true
+	errs := []error{}
+
+	seen := make(map[string]string)
 	for _, station := range appData.NetworkMap {
 		key := strconv.Itoa(station.X_axis) + "," + strconv.Itoa(station.Y_axis)
 
-		if _, ok := seen[key]; ok {
-			return false
+		if first, ok := seen[key]; ok {
+			valid = false
+			errs = append(errs,
+				fmt.Errorf("duplicate coordinates (%d, %d): stations %q and %q",
+					station.X_axis,
+					station.Y_axis,
+					first,
+					station.Name))
 		}
 
-		seen[key] = struct{}{}
+		seen[key] = station.Name
 	}
 
-	return true
+	return valid, errs
 }
 
-func (v StationLineValidator) Validate(line string) bool {
+func (v StationLineValidator) Validate(line string) (bool, []error) {
+	errs := []error{}
+	valid := true
+
 	line = isComment(line)
 	args := strings.Split(line, ",")
 	if len(args) != 3 {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Not valid station line: %s. Station line doesn't contain 3 elements.", line))
 	}
 	for i := range args {
 		args[i] = strings.TrimSpace(args[i])
 	}
-	if !validName(args[0]) {
-		return false
+
+	if len(args) == 3 {
+		ok, err := validName(args[0])
+		if !ok {
+			valid = false
+			errs = append(errs, err)
+		}
+
+		ok, err = validAxis(args[1])
+		if !ok {
+			valid = false
+			errs = append(errs, err)
+		}
+
+		ok, err = validAxis(args[2])
+		if !ok {
+			valid = false
+			errs = append(errs, err)
+		}
 	}
-	if !validAxis(args[1]) {
-		return false
-	}
-	if !validAxis(args[2]) {
-		println(args[2])
-		return false
-	}
-	return true
+
+	return valid, errs
 }
 
-func (v ConnectionLineValidator) Validate(line string) bool {
+func (v ConnectionLineValidator) Validate(line string) (bool, []error) {
+	errs := []error{}
+	valid := true
+
 	line = isComment(line)
 	args := strings.Split(line, "-")
 	if len(args) != 2 {
-		return false
+		valid = false
+		errs = append(errs, fmt.Errorf("Not valid connection line: %s. Connection contains not 2 stations.", line))
 	}
 	for i := range args {
 		args[i] = strings.TrimSpace(args[i])
 	}
-	if !validName(args[0]) {
-		return false
+
+	if len(args) == 2 {
+		_, err := validName(args[0])
+		if err != nil {
+			valid = false
+			errs = append(errs, err)
+		}
+
+		_, error := validName(args[1])
+		if error != nil {
+			valid = false
+			errs = append(errs, err)
+		}
 	}
-	if !validName(args[1]) {
-		println(args[1])
-		return false
-	}
-	return true
+
+	return valid, errs
 }
 
 func containsStation(station []*m.Station, name string) bool {
@@ -142,28 +195,28 @@ func normalize(name string) string {
 	return parts[1] + "-" + parts[0]
 }
 
-func validName(name string) bool {
+func validName(name string) (bool, error) {
 	if name == "" {
-		return false
+		return false, fmt.Errorf("Name is empty.")
 	}
 	for _, v := range name {
 		if !strings.ContainsRune("abcdefghijklmnopqrstuvwxyz_1234567890", v) {
-			return false
+			return false, fmt.Errorf("Not valid symbols in name.")
 		}
 	}
-	return true
+	return true, nil
 }
 
-func validAxis(axis string) bool {
+func validAxis(axis string) (bool, error) {
 	if axis == "" {
-		return false
+		return false, fmt.Errorf("Axis is empty.")
 	}
 	for _, v := range axis {
 		if !strings.ContainsRune("1234567890", v) {
-			return false
+			return false, fmt.Errorf("Axis contains not valid symbols.")
 		}
 	}
-	return true
+	return true, nil
 }
 
 func isComment(line string) string {

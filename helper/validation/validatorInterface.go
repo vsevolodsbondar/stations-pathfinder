@@ -3,11 +3,11 @@ package validation
 import m "trains/models"
 
 type AppDataValidator interface {
-	Validate(appData m.AppData) bool
+	Validate(appData m.AppData) (bool, []error)
 }
 
 type FileValidator interface {
-	Validate(rawData []string) (bool, error)
+	Validate(rawData []string) (bool, []error)
 }
 
 var appDataValidationRules = []AppDataValidator{
@@ -16,13 +16,16 @@ var appDataValidationRules = []AppDataValidator{
 	UniqueCoordinatesForStation{},
 }
 
-func ValidateWithAllRules(appData m.AppData) bool {
+func ValidateWithAllRules(appData m.AppData) (bool, []error) {
+	valid := true
+	errs := []error{}
 	for _, v := range appDataValidationRules {
-		ok := v.Validate(appData)
+		ok, err := v.Validate(appData)
 		if !ok {
-			return false
+			valid = false
+			errs = append(errs, err...)
 		}
 	}
 
-	return true
+	return valid, errs
 }
