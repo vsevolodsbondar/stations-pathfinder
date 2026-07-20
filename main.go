@@ -5,6 +5,7 @@ import (
 	"log"
 	c "trains/cli"
 	p "trains/pathfinder"
+	s "trains/scheduler"
 )
 
 func main() {
@@ -31,5 +32,15 @@ func main() {
 		for _, r := range v {
 			r.PrintRoute()
 		}
+	}
+
+	shortest := s.BestSingleRoute(res)
+	fmt.Println("Shortest:")
+	shortest.PrintRoute()
+
+	multiple := s.BestMultipleRoutes(res, appData.TrainNumb)
+	fmt.Println("For trains:", appData.TrainNumb)
+	for _, v := range multiple {
+		v.PrintRoute()
 	}
 }
