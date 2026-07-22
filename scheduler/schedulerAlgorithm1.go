@@ -8,7 +8,7 @@ import (
 
 func MoveTrains(routes []m.Route, trainsNumb int) {
 	trains := h.TrainMaker(routes[0].Route[0], trainsNumb)
-	finished := AssignRouteToTrain(trains, routes)
+	AssignRouteToTrain(trains, routes)
 
 	freeStations := map[string]bool{}
 
@@ -19,7 +19,7 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 		}
 	}
 
-	for !allFinished(finished) {
+	for !allFinished(trains) {
 		turnString := ""
 
 		for i := range trains {
@@ -47,12 +47,8 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 				freeStations[nextStation] = false
 			}
 
-			moved, info := trains[i].Move()
+			_, info := trains[i].Move()
 			turnString += info
-
-			if !moved {
-				finished[trains[i].ID] = true
-			}
 		}
 
 		if turnString != "" {
@@ -61,17 +57,11 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 	}
 }
 
-func AssignRouteToTrain(trains []m.Train, routes []m.Route) map[int]bool {
-	finished := map[int]bool{}
-
+func AssignRouteToTrain(trains []m.Train, routes []m.Route) {
 	for i := range trains {
 		route := bestTrainRoute(routes)
 		trains[i].Route = route
-
-		finished[trains[i].ID] = false
 	}
-
-	return finished
 }
 
 func bestTrainRoute(routes []m.Route) m.Route {
@@ -91,12 +81,11 @@ func bestTrainRoute(routes []m.Route) m.Route {
 	return routes[best]
 }
 
-func allFinished(finished map[int]bool) bool {
-	for _, done := range finished {
-		if !done {
+func allFinished(trains []m.Train) bool {
+	for _, t := range trains {
+		if !t.Finished {
 			return false
 		}
 	}
-
 	return true
 }
