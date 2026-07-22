@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	c "trains/cli"
 	p "trains/pathfinder"
@@ -21,13 +20,8 @@ func main() {
 		log.Fatal("Error: ", err)
 	}
 
-	res, err := p.DFSRangedRouteSets(appData)
-	if err != nil {
-		log.Fatal("Error: ", err)
-	}
 	//res := p.BigFuckingSearch(appData)
-	write := p.MySearch(appData)
-	for _, v := range write {
-		fmt.Println(v)
-	}
+	res := p.BuildFlowGraph(&appData)
+
+	res.Graph.Print()
 }
