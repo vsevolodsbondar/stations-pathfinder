@@ -19,13 +19,12 @@ func (t Train) PrintTrain() {
 func (t *Train) Move() (bool, string) {
 	t.Turn++
 	t.CurrStation = t.Route.Route[t.Turn]
-	formatted := fmt.Sprintf("T%d-%s ", t.ID, t.CurrStation)
+	info := fmt.Sprintf("T%d-%s ", t.ID, t.CurrStation)
 
-	t.CanMove = false
-	if t.CurrStation == t.Route.Route[len(t.Route.Route)-1] {
+	if t.Turn == len(t.Route.Route)-1 {
 		t.Finished = true
-		return false, formatted
+		return false, info
 	}
 
-	return true, formatted
+	return true, info
 }

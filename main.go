@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	c "trains/cli"
+	h "trains/helper/routeUtils"
 	p "trains/pathfinder"
 	s "trains/scheduler"
 )
@@ -27,15 +27,7 @@ func main() {
 		log.Fatal("Error: ", err)
 	}
 
-	shortest := s.BestSingleRoute(res)
-	fmt.Println("Shortest:")
-	shortest[0].PrintRoute()
+	bestRoutes := h.BestRoutes(res, appData.TrainNumb)
 
-	multiple := s.BestMultipleRoutes(res, appData.TrainNumb)
-	fmt.Println("For trains:", appData.TrainNumb)
-	for _, v := range multiple {
-		v.PrintRoute()
-	}
-
-	s.MoveTrains(multiple, appData.TrainNumb)
+	s.MoveTrains(bestRoutes, appData.TrainNumb)
 }
