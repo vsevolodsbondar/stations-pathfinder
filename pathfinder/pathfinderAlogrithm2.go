@@ -3,9 +3,11 @@ package pathfinder
 import (
 	"errors"
 	"fmt"
+	"math"
 	m "trains/models"
 )
 
+// Rail is one directed rail in the flow graph.
 type Rail struct {
 	To       int
 	Capacity int
@@ -13,10 +15,12 @@ type Rail struct {
 	Reverse  int
 }
 
+// FlowGraph stores the residual graph used by the max-flow algorithm.
 type FlowGraph struct {
 	Rails [][]Rail
 }
 
+// FlowNetwork maps railway stations to the corresponding flow graph.
 type FlowNetwork struct {
 	Graph       *FlowGraph
 	StationToID map[*m.Station]int
@@ -73,8 +77,8 @@ func (r Rail) RemainingCapacity() int {
 	return r.Capacity - r.Flow
 }
 
-func (g *FlowGraph) Print() {
-	for i, rails := range g.Rails {
+func (g *FlowNetwork) Print() {
+	for i, rails := range g.Graph.Rails {
 		fmt.Printf("%d:\n", i)
 		for _, rail := range rails {
 			fmt.Printf("->%d cap=%d flow=%d rev=%d\n", rail.To, rail.Capacity, rail.Flow, rail.Reverse)
@@ -139,7 +143,7 @@ func (g *FlowGraph) MaxFlow(start, end int) int {
 		if !found {
 			break
 		}
-		pathFlow := int(^uint(0) >> 1) // MaxInt
+		pathFlow := math.MaxInt
 		current := end
 		for current != start {
 			p := parents[current]
@@ -165,7 +169,7 @@ func (n *FlowNetwork) ExtractPaths(pathCount int) ([][]*m.Station, error) {
 	paths := make([][]*m.Station, 0, pathCount)
 	startIn := n.StationToID[n.Start]
 	endIn := n.StationToID[n.End]
-	for range pathCount {
+	for i := 0; i < pathCount; i++ {
 		path := []*m.Station{}
 		current := startIn
 		for current != endIn {

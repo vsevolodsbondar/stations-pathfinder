@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	c "trains/cli"
 	p "trains/pathfinder"
@@ -23,5 +24,15 @@ func main() {
 	//res := p.BigFuckingSearch(appData)
 	res := p.BuildFlowGraph(&appData)
 
-	res.Graph.Print()
+	maxFlow := res.Graph.MaxFlow(res.StationToID[appData.StartingStation], res.StationToID[appData.EndingStation])
+	paths, err := res.ExtractPaths(maxFlow)
+
+	for i, path := range paths {
+		fmt.Printf("%d: ", i)
+		for _, st := range path {
+			fmt.Printf("%s ", st.Name)
+		}
+		fmt.Println()
+	}
+
 }
