@@ -27,20 +27,15 @@ func main() {
 		log.Fatal("Error: ", err)
 	}
 
-	for i, v := range res {
-		fmt.Println("Set", i+1, ":")
-		for _, r := range v {
-			r.PrintRoute()
-		}
-	}
-
 	shortest := s.BestSingleRoute(res)
 	fmt.Println("Shortest:")
-	shortest.PrintRoute()
+	shortest[0].PrintRoute()
 
 	multiple := s.BestMultipleRoutes(res, appData.TrainNumb)
 	fmt.Println("For trains:", appData.TrainNumb)
 	for _, v := range multiple {
 		v.PrintRoute()
 	}
+
+	s.MoveTrains(multiple, appData.TrainNumb)
 }

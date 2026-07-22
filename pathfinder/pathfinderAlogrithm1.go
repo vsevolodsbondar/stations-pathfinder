@@ -68,6 +68,7 @@ func DFSRangedRouteSets(appData m.AppData) ([][]m.Route, error) {
 		route := d.PathsDistance(appData, p)
 		route.ID = i + 1
 		route.CrossingRoutes = map[int]struct{}{}
+		route.RouteScore = len(route.Route)
 
 		res = append(res, route)
 	}
