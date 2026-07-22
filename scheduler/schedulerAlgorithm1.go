@@ -59,12 +59,12 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 
 func AssignRouteToTrain(trains []m.Train, routes []m.Route) {
 	for i := range trains {
-		route := bestTrainRoute(routes)
-		trains[i].Route = route
+		idx := bestTrainRoute(routes)
+		trains[i].Route = routes[idx]
 	}
 }
 
-func bestTrainRoute(routes []m.Route) m.Route {
+func bestTrainRoute(routes []m.Route) int {
 	best := 0
 
 	for i := 1; i < len(routes); i++ {
@@ -78,7 +78,7 @@ func bestTrainRoute(routes []m.Route) m.Route {
 
 	routes[best].RouteScore++
 
-	return routes[best]
+	return best
 }
 
 func allFinished(trains []m.Train) bool {

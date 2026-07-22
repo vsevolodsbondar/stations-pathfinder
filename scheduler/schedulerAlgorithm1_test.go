@@ -23,16 +23,16 @@ func BenchmarkScheduleTrains(b *testing.B) {
 			Route:      []string{"jungle", "grasslands", "suburbs", "clouds", "wetlands", "mountain", "farms", "downtown", "metropolis", "industrial", "desert"},
 			RouteScore: 1,
 		},
-		// {
-		// 	ID:         4,
-		// 	Route:      []string{"jungle", "farms", "downtown", "metropolis", "industrial", "desert"},
-		// 	RouteScore: 6,
-		// },
 		{
-			ID:         5,
-			Route:      []string{"jungle", "farms", "mountain", "treetop", "desert"},
-			RouteScore: 5,
+			ID:         4,
+			Route:      []string{"jungle", "farms", "downtown", "metropolis", "industrial", "desert"},
+			RouteScore: 6,
 		},
+		// {
+		// 	ID:         5,
+		// 	Route:      []string{"jungle", "farms", "mountain", "treetop", "desert"},
+		// 	RouteScore: 5,
+		// },
 	}
 	trainNumb := 10000
 
