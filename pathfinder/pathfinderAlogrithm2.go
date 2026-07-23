@@ -113,6 +113,9 @@ func (g *FlowGraph) AddRail(from, to, capacity int) {
 
 // BFS finds an augmenting path using breadth-first search.
 func (g *FlowGraph) BFS(start, end int) ([]Parent, bool) {
+	if len(g.Rails) == 0 {
+		return nil, false
+	}
 	parents := make([]Parent, len(g.Rails))
 	visited := make([]bool, len(g.Rails))
 	visited[start] = true
