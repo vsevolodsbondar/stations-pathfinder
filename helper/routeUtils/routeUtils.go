@@ -121,6 +121,14 @@ func BestRoutes(routeSets [][]m.Route, trains int) []m.Route {
 		if len(v) > maxIndependentRoutes {
 			maxIndependentRoutes = len(v)
 		}
+
+		//checking if there is a route that can move all trains in 1 turn
+		for _, r := range v {
+			if r.RouteScore == 2 {
+				mostEffectiveIndependentRoutes = append(mostEffectiveIndependentRoutes, r)
+				return mostEffectiveIndependentRoutes
+			}
+		}
 	}
 
 	if trains < maxIndependentRoutes {
