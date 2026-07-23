@@ -25,15 +25,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	res, err := p.DFSRangedRouteSets(appData)
-	if err != nil {
-		log.Fatal("Error: ", err)
+	//res := p.BigFuckingSearch(appData)
+	res := p.BuildFlowGraph(&appData)
+
+	maxFlow := res.Graph.MaxFlow(res.StationToID[appData.StartingStation], res.StationToID[appData.EndingStation])
+	paths, err := res.ExtractPaths(maxFlow)
+
+	for i, path := range paths {
+		fmt.Printf("%d: ", i)
+		for _, st := range path {
+			fmt.Printf("%s ", st.Name)
+		}
+		fmt.Println()
 	}
 
-	for i, v := range res {
-		fmt.Println("Set", i+1, ":")
-		for _, r := range v {
-			r.PrintRoute()
-		}
-	}
 }
