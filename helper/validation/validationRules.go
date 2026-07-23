@@ -152,7 +152,7 @@ func (v ConnectionLineValidator) Validate(line string) (bool, []error) {
 	args := strings.Split(line, "-")
 	if len(args) != 2 {
 		valid = false
-		errs = append(errs, fmt.Errorf("Not valid connection line: %s. Connection contains not 2 stations.", line))
+		errs = append(errs, fmt.Errorf("Not a valid connection line: %s. Connection contains not 2 stations.", line))
 	}
 	for i := range args {
 		args[i] = strings.TrimSpace(args[i])
@@ -203,7 +203,7 @@ func validName(name string) (bool, error) {
 	}
 	for _, v := range name {
 		if !strings.ContainsRune("abcdefghijklmnopqrstuvwxyz_1234567890", v) {
-			return false, fmt.Errorf("Not valid symbols in name.")
+			return false, fmt.Errorf("Not valid symbol in name: %s.", string(v))
 		}
 	}
 	return true, nil
@@ -215,7 +215,7 @@ func validAxis(axis string) (bool, error) {
 	}
 	for _, v := range axis {
 		if !strings.ContainsRune("1234567890", v) {
-			return false, fmt.Errorf("Axis contains not valid symbols.")
+			return false, fmt.Errorf("Axis contains not valid symbol: %s.", string(v))
 		}
 	}
 	return true, nil

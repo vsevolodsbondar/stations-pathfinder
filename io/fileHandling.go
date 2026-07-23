@@ -58,28 +58,30 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 
 		switch {
 		case st:
-			ok, errrs := stValidator.Validate(line)
-			if errrs != nil {
-				errs = append(errs, errrs...)
+			ok, validationErrs := stValidator.Validate(line)
+			if validationErrs != nil {
+				for _, err := range validationErrs {
+					errs = append(errs,
+						fmt.Errorf("Invalid station (%s), line %d: %w", line, lineNumb, err))
+				}
 			}
 			if ok {
 				err := WriteStation(stations, line, lineNumb)
 				if err != nil {
 					errs = append(errs, err)
 				}
-			} else if !(strings.Contains(line, "#") || line == "") {
-				errs = append(errs, fmt.Errorf("Invalid Station (%s) %d", line, lineNumb))
 			}
 		case con:
-			ok, errors := conValidator.Validate(line)
-			if errors != nil {
-				errs = append(errs, errors...)
+			ok, validationErrs := conValidator.Validate(line)
+			if validationErrs != nil {
+				for _, err := range validationErrs {
+					errs = append(errs,
+						fmt.Errorf("Invalid connection: %s, line: %d: %w", line, lineNumb, err))
+				}
 			}
 			if ok {
 				line = isComment(line)
 				connections = append(connections, line)
-			} else if !(strings.Contains(line, "#") || line == "") {
-				errs = append(errs, fmt.Errorf("Invalid connection: %s, line: %d", line, lineNumb))
 			}
 		default:
 			if !(strings.Contains(line, "#") || line == "") {
@@ -129,6 +131,12 @@ func WriteStation(stations map[string]*s.Station, line string, lineNumb int) err
 		X_axis: x,
 		Y_axis: y,
 	}
+
+	stationInMap, ok := stations[args[0]]
+	if ok {
+		return fmt.Errorf("Station is duplicated: %s, line: %d", stationInMap.Name, lineNumb)
+	}
+
 	stations[args[0]] = station
 
 	return nil
