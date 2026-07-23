@@ -7,6 +7,9 @@ type Route struct {
 	Route          []string
 	Distance       float64
 	CrossingRoutes map[int]struct{}
+
+	AssignedTrains int
+	RouteScore     int
 }
 
 func (r Route) PrintRoute() {

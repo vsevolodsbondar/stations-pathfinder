@@ -32,6 +32,11 @@ func FlagHandling() (m.FlagConfig, error) {
 		return m.FlagConfig{}, err
 	}
 
+	if trains > 20000 {
+		err := fmt.Errorf("Not a valid number of trains. Why do we need that much?:). Max: 20000")
+		return m.FlagConfig{}, err
+	}
+
 	return m.FlagConfig{
 		NetworkMapPath:  networkFile,
 		StartingStation: start,
