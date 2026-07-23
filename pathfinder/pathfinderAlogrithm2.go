@@ -15,12 +15,12 @@ type Rail struct {
 	Reverse  int
 }
 
-// FlowGraph stores the residual graph used by the max-flow algorithm.
+// FlowGraph stores all rails used by the max flow algorithm.
 type FlowGraph struct {
 	Rails [][]Rail
 }
 
-// FlowNetwork maps railway stations to the corresponding flow graph.
+// FlowNetwork connects the railway map with the flow graph.
 type FlowNetwork struct {
 	Graph       *FlowGraph
 	StationToID map[*m.Station]int
@@ -29,11 +29,15 @@ type FlowNetwork struct {
 	End         *m.Station
 }
 
+// Parent stores the previous node while searching for a path.
 type Parent struct {
 	From int
 	Rail *Rail
 }
 
+// BuildFlowGraph converts the railway network into a flow graph.
+// Each station is split into an input and an output node so that
+// only one train can pass through intermediate stations.
 func BuildFlowGraph(data *m.AppData) *FlowNetwork {
 	graph := &FlowGraph{
 		Rails: make([][]Rail, len(data.NetworkMap)*2),
@@ -73,6 +77,7 @@ func BuildFlowGraph(data *m.AppData) *FlowNetwork {
 	}
 }
 
+// RemainingCapacity returns how much flow can still pass through this rail.
 func (r Rail) RemainingCapacity() int {
 	return r.Capacity - r.Flow
 }
@@ -86,6 +91,7 @@ func (g *FlowNetwork) Print() {
 	}
 }
 
+// AddRail adds a rail and its reverse rail to the graph.
 func (g *FlowGraph) AddRail(from, to, capacity int) {
 	forwardIdx := len(g.Rails[from])
 	reverseIdx := len(g.Rails[to])
@@ -105,6 +111,7 @@ func (g *FlowGraph) AddRail(from, to, capacity int) {
 	g.Rails[to] = append(g.Rails[to], reverse)
 }
 
+// BFS finds an augmenting path using breadth-first search.
 func (g *FlowGraph) BFS(start, end int) ([]Parent, bool) {
 	parents := make([]Parent, len(g.Rails))
 	visited := make([]bool, len(g.Rails))
@@ -136,6 +143,7 @@ func (g *FlowGraph) BFS(start, end int) ([]Parent, bool) {
 	return parents, false
 }
 
+// MaxFlow finds the maximum number of independent paths.
 func (g *FlowGraph) MaxFlow(start, end int) int {
 	maxFlow := 0
 	for {
@@ -165,6 +173,7 @@ func (g *FlowGraph) MaxFlow(start, end int) int {
 	return maxFlow
 }
 
+// ExtractPaths builds railway paths from the computed flow.
 func (n *FlowNetwork) ExtractPaths(pathCount int) ([][]*m.Station, error) {
 	paths := make([][]*m.Station, 0, pathCount)
 	startIn := n.StationToID[n.Start]
