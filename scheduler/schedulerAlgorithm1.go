@@ -1,28 +1,13 @@
 package scheduler
 
 import (
-	"context"
 	"fmt"
-	"log"
-	h "trains/helper/schedulingUtils"
+	s "trains/helper/schedulingUtils"
 	m "trains/models"
 )
 
-func SchedulerAlgorithm(ctx context.Context, routes []m.Route, trainsNumb int) {
-	for {
-		select {
-		case <-ctx.Done():
-			log.Println("Scheduler is stopping the work...")
-			return
-
-		default:
-			MoveTrains(routes, trainsNumb)
-		}
-	}
-}
-
 func MoveTrains(routes []m.Route, trainsNumb int) {
-	trains := h.TrainMaker(routes[0].Route[0], trainsNumb)
+	trains := s.TrainMaker(routes[0].Route[0], trainsNumb)
 	AssignRouteToTrain(trains, routes)
 
 	freeStations := map[string]bool{}

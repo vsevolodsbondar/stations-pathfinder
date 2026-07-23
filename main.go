@@ -9,9 +9,7 @@ import (
 	"sync"
 	"syscall"
 	c "trains/cli"
-	h "trains/helper/routeUtils"
-	p "trains/pathfinder"
-	s "trains/scheduler"
+	s "trains/service"
 )
 
 func main() {
@@ -42,12 +40,9 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	routeSets, err := p.DFSRangedRouteSets(appData)
-	best := h.BestRoutes(routeSets, appData.TrainNumb)
-
 	go func() {
 		defer wg.Done()
-		s.SchedulerAlgorithm(ctx, best, appData.TrainNumb)
+		s.AlgorithmRunner(ctx, appData)
 	}()
 
 	<-ctx.Done()
