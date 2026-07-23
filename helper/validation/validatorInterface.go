@@ -10,6 +10,10 @@ type FileValidator interface {
 	Validate(rawData []string) (bool, []error)
 }
 
+type BlocksValidator interface {
+	Validate(rawData string) (bool, []error)
+}
+
 var appDataValidationRules = []AppDataValidator{
 	StartStationValidator{},
 	EndStationValidator{},

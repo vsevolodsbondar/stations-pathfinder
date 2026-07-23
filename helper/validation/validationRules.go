@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	m "trains/models"
@@ -13,8 +14,24 @@ type StartEndValidator struct{}
 type UniqueCoordinatesForStation struct{}
 type StationLineValidator struct{}
 type ConnectionLineValidator struct{}
+type StationConnectionBlocks struct{}
 
 type DuplicateConnectionsSliceValidator struct{}
+
+func (v StationConnectionBlocks) Validate(path string) (bool, []error) {
+	file, err := os.ReadFile(path)
+	errors := []error{}
+	if err != nil {
+		errors = append(errors, err)
+	}
+	if !strings.Contains(string(file), "stations:") {
+		errors = append(errors, fmt.Errorf("No stations block in file"))
+	}
+	if !strings.Contains(string(file), "connections:") {
+		errors = append(errors, fmt.Errorf("No connections block in file"))
+	}
+	return false, errors
+}
 
 func (v StartStationValidator) Validate(appData m.AppData) (bool, []error) {
 	valid := true

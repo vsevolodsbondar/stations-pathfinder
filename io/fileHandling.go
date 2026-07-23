@@ -15,6 +15,7 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 	var conDuplicates v.DuplicateConnectionsSliceValidator
 	var stValidator v.StationLineValidator
 	var conValidator v.ConnectionLineValidator
+	var stConBlocks v.StationConnectionBlocks
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return nil, []error{errors.New("File does not exist")}
 	}
@@ -22,15 +23,21 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 	connections := []string{}
 	st := false
 	con := false
+	errs := []error{}
+
+	val, valErrs := stConBlocks.Validate(path)
+	if !val {
+		errs = append(errs, valErrs...)
+		return nil, errs
+	}
 
 	file, err := os.Open(path)
+
 	if err != nil {
 		return nil, []error{errors.New("Cannot open the file")}
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-
-	errs := []error{}
 
 	lineNumb := 0
 	for scanner.Scan() {
