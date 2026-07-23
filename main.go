@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	c "trains/cli"
 	p "trains/pathfinder"
@@ -13,13 +12,14 @@ func main() {
 	//go run . -feature test2.map jungle desert 5
 	conf, err := c.FlagHandling()
 	if err != nil {
-		log.Fatal("Error: ", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
 	}
 
 	appData, errs := c.DataConfiguration(conf)
 	if len(errs) > 0 {
 		for _, err := range errs {
-			log.Println(err)
+			fmt.Fprintln(os.Stderr, "Error:", err)
 		}
 		os.Exit(1)
 	}
