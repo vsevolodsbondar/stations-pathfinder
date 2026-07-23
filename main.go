@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
 	c "trains/cli"
 	h "trains/helper/routeUtils"
 	p "trains/pathfinder"
@@ -14,20 +15,30 @@ func main() {
 	//go run . -feature smallAndLarge.map small large 9
 	conf, err := c.FlagHandling()
 	if err != nil {
-		log.Fatal("Error: ", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
 	}
 
-	appData, err := c.DataConfiguration(conf)
-	if err != nil {
-		log.Fatal("Error: ", err)
+	appData, errs := c.DataConfiguration(conf)
+	if len(errs) > 0 {
+		for _, err := range errs {
+			fmt.Fprintln(os.Stderr, "Error:", err)
+		}
+		os.Exit(1)
 	}
 
-	res, err := p.DFSRangedRouteSets(appData)
-	if err != nil {
-		log.Fatal("Error: ", err)
+	//res := p.BigFuckingSearch(appData)
+	res := p.BuildFlowGraph(&appData)
+
+	maxFlow := res.Graph.MaxFlow(res.StationToID[appData.StartingStation], res.StationToID[appData.EndingStation])
+	paths, err := res.ExtractPaths(maxFlow)
+
+	for i, path := range paths {
+		fmt.Printf("%d: ", i)
+		for _, st := range path {
+			fmt.Printf("%s ", st.Name)
+		}
+		fmt.Println()
 	}
 
-	bestRoutes := h.BestRoutes(res, appData.TrainNumb)
-
-	s.MoveTrains(bestRoutes, appData.TrainNumb)
 }
