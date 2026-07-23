@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"os"
 	c "trains/cli"
 	p "trains/pathfinder"
 )
@@ -13,12 +13,16 @@ func main() {
 	//go run . -feature smallAndLarge.map small large 9
 	conf, err := c.FlagHandling()
 	if err != nil {
-		log.Fatal("Error: ", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
 	}
 
-	appData, err := c.DataConfiguration(conf)
-	if err != nil {
-		log.Fatal("Error: ", err)
+	appData, errs := c.DataConfiguration(conf)
+	if len(errs) > 0 {
+		for _, err := range errs {
+			fmt.Fprintln(os.Stderr, "Error:", err)
+		}
+		os.Exit(1)
 	}
 
 	res, err := p.DFSRangedRouteSets(appData)

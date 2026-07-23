@@ -1,18 +1,17 @@
 package cli
 
 import (
-	"fmt"
 	val "trains/helper/validation"
 	io "trains/io"
 	m "trains/models"
 )
 
-func DataConfiguration(conf m.FlagConfig) (m.AppData, error) {
+func DataConfiguration(conf m.FlagConfig) (m.AppData, []error) {
 	appData := m.AppData{}
 
-	stations, err := (io.HandleInitialInputFile(conf.NetworkMapPath))
-	if err != nil {
-		return appData, err
+	stations, errrs := (io.HandleInitialInputFile(conf.NetworkMapPath))
+	if errrs != nil {
+		return appData, errrs
 	}
 
 	var stationsSlice []*m.Station
@@ -26,9 +25,9 @@ func DataConfiguration(conf m.FlagConfig) (m.AppData, error) {
 	appData.EndingStation = stations[conf.EndingStation]
 	appData.TrainNumb = conf.TrainNumb
 
-	ok := val.ValidateWithAllRules(appData)
+	ok, errs := val.ValidateWithAllRules(appData)
 	if !ok {
-		return m.AppData{}, fmt.Errorf("Some issue with input data.")
+		return m.AppData{}, errs
 	}
 
 	return appData, nil
