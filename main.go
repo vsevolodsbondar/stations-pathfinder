@@ -29,8 +29,6 @@ func main() {
 	//res := p.BigFuckingSearch(appData)
 	res := p.BuildFlowGraph(&appData)
 
-	fmt.Println(&appData)
-
 	maxFlow := res.Graph.MaxFlow(res.StationToID[appData.StartingStation], res.StationToID[appData.EndingStation])
 	paths, err := res.ExtractPaths(maxFlow)
 	distribution := s.DistributeTrains(paths, appData.TrainNumb)

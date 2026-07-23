@@ -12,23 +12,23 @@ type Train struct {
 
 func DistributeTrains(paths [][]*m.Station, trainCount int) []int {
 	assigned := make([]int, len(paths))
-	cost := make([]int, len(paths))
+	arrival := make([]int, len(paths))
 
 	for i, path := range paths {
-		cost[i] = len(path)
+		arrival[i] = len(path)
 	}
 
 	for i := 0; i < trainCount; i++ {
 		best := 0
 
-		for j := 1; j < len(cost); j++ {
-			if cost[j] < cost[best] {
+		for j := 1; j < len(arrival); j++ {
+			if arrival[j] < arrival[best] {
 				best = j
 			}
 		}
 
 		assigned[best]++
-		cost[best]++
+		arrival[best]++
 	}
 	return assigned
 }
