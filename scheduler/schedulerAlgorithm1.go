@@ -1,11 +1,25 @@
 package scheduler
 
 import (
-<<<<<<< HEAD
+	"context"
 	"fmt"
+	"log"
 	h "trains/helper/schedulingUtils"
 	m "trains/models"
 )
+
+func SchedulerAlgorithm(ctx context.Context, routes []m.Route, trainsNumb int) {
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Scheduler is stopping the work...")
+			return
+
+		default:
+			MoveTrains(routes, trainsNumb)
+		}
+	}
+}
 
 func MoveTrains(routes []m.Route, trainsNumb int) {
 	trains := h.TrainMaker(routes[0].Route[0], trainsNumb)
@@ -90,23 +104,3 @@ func allFinished(trains []m.Train) bool {
 	}
 	return true
 }
-=======
-	"context"
-	"log"
-	"time"
-)
-
-func SchedulerAlgorithm(ctx context.Context, paths string) {
-	for {
-		select {
-		case <-ctx.Done():
-			log.Println("Scheduler is stopping the work...")
-			return
-
-		default:
-			log.Println("Scheduling...")
-			time.Sleep(5000 * time.Millisecond)
-		}
-	}
-}
->>>>>>> 3-gracefull-shutdown
