@@ -23,8 +23,7 @@ func FlagHandling() (m.FlagConfig, error) {
 	end := args[2]
 
 	if start == end {
-		err := fmt.Errorf("Starting and ending locations should not be the same")
-		return m.FlagConfig{}, err
+		return m.FlagConfig{}, fmt.Errorf("Starting and ending locations should not be the same")
 	}
 
 	trains, err := strconv.Atoi(args[3])

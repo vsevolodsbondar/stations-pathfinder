@@ -11,7 +11,5 @@ st_pancras,5,15 # international
 
 
 waterloo -victoria
-waterloo- euston
-waterloo- waterloo
-st_pancras-euston
+waterloo- st_pancras
 victoria-st_pancras

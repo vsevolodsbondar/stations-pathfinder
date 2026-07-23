@@ -9,7 +9,8 @@ import (
 
 func main() {
 	//go run . -feature stations.map waterloo euston 5
-	//go run . -feature test2.map jungle desert 5
+	//go run . -feature jungle-desert.map jungle desert 5
+	//go run . -feature smallAndLarge.map small large 9
 	conf, err := c.FlagHandling()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
@@ -24,15 +25,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	for _, v := range appData.NetworkMap {
-		fmt.Println("Station:", v.Name)
-		for _, con := range v.Connections {
-			fmt.Println("Connection:", con.Name)
-		}
+	res, err := p.DFSRangedRouteSets(appData)
+	if err != nil {
+		log.Fatal("Error: ", err)
 	}
 
-	res := p.BigFuckingSearch(appData)
-	for _, v := range res {
-		fmt.Println(v)
+	for i, v := range res {
+		fmt.Println("Set", i+1, ":")
+		for _, r := range v {
+			r.PrintRoute()
+		}
 	}
 }
