@@ -23,7 +23,8 @@ func (v StartStationValidator) Validate(appData m.AppData) (bool, []error) {
 	// checking some fields to make shure that it was initialized
 	if appData.StartingStation == nil {
 		valid = false
-		errs = append(errs, fmt.Errorf("Starting station can't be empty."))
+		errs = append(errs, fmt.Errorf("Starting station does not exist."))
+		return valid, errs
 	}
 
 	if appData.StartingStation.Connections == nil {
@@ -45,7 +46,8 @@ func (v EndStationValidator) Validate(appData m.AppData) (bool, []error) {
 
 	if appData.EndingStation == nil {
 		valid = false
-		errs = append(errs, fmt.Errorf("Ending station can't be empty."))
+		errs = append(errs, fmt.Errorf("Ending station does not exist."))
+		return valid, errs
 	}
 
 	if appData.EndingStation.Connections == nil {
