@@ -11,21 +11,30 @@ import (
 	s "trains/models"
 )
 
-func HandleInitialInputFile(path string) (map[string]*s.Station, error) {
+func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 	var conDuplicates v.DuplicateConnectionsSliceValidator
 	var stValidator v.StationLineValidator
 	var conValidator v.ConnectionLineValidator
+	var stConBlocks v.StationConnectionBlocks
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		return nil, errors.New("File does not exist")
+		return nil, []error{errors.New("File does not exist")}
 	}
 	stations := make(map[string]*s.Station)
 	connections := []string{}
 	st := false
 	con := false
+	errs := []error{}
+
+	val, valErrs := stConBlocks.Validate(path)
+	if !val {
+		errs = append(errs, valErrs...)
+		return nil, errs
+	}
 
 	file, err := os.Open(path)
+
 	if err != nil {
-		return nil, errors.New("Cannot open the file")
+		return nil, []error{errors.New("Cannot open the file")}
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
@@ -35,6 +44,14 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, error) {
 		lineNumb++
 		line := scanner.Text()
 		line = strings.ReplaceAll(line, " ", "")
+
+		//skipping empty lines
+		line = isComment(line)
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
 		if strings.Contains(line, "stations:") {
 			st = true
 			con = false
@@ -48,38 +65,53 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, error) {
 
 		switch {
 		case st:
-			if stValidator.Validate(line) {
+			ok, validationErrs := stValidator.Validate(line)
+			if validationErrs != nil {
+				for _, err := range validationErrs {
+					errs = append(errs,
+						fmt.Errorf("Invalid station (%s), line %d: %w", line, lineNumb, err))
+				}
+			}
+			if ok {
 				err := WriteStation(stations, line, lineNumb)
 				if err != nil {
-					return nil, err
+					errs = append(errs, err)
 				}
-			} else if !(strings.Contains(line, "#") || line == "") {
-				return nil, fmt.Errorf("Invalid Station (%s) %d", line, lineNumb)
 			}
 		case con:
-			if conValidator.Validate(line) {
+			ok, validationErrs := conValidator.Validate(line)
+			if validationErrs != nil {
+				for _, err := range validationErrs {
+					errs = append(errs,
+						fmt.Errorf("Invalid connection: %s, line: %d: %w", line, lineNumb, err))
+				}
+			}
+			if ok {
 				line = isComment(line)
 				connections = append(connections, line)
-			} else if !(strings.Contains(line, "#") || line == "") {
-				return nil, fmt.Errorf("Invalid connection (%s) %d", line, lineNumb)
 			}
 		default:
 			if !(strings.Contains(line, "#") || line == "") {
-				return nil, fmt.Errorf("Not commented line (%s) %d", line, lineNumb)
+				errs = append(errs, fmt.Errorf("Not commented line: %s, line: %d", line, lineNumb))
 			}
 		}
+
+	}
+
+	if len(errs) > 0 {
+		return nil, errs
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, errors.New("Error reading map files")
+		return nil, []error{errors.New("Error reading map files")}
 	}
-	ok, err := conDuplicates.Validate(connections)
+	ok, errs := conDuplicates.Validate(connections)
 	if !ok {
-		return nil, err
+		return nil, errs
 	}
-	error := WriteConnections(stations, connections)
-	if error != nil {
-		return nil, error
+	err = WriteConnections(stations, connections)
+	if err != nil {
+		return nil, []error{err}
 	}
 	return stations, nil
 }
@@ -106,6 +138,12 @@ func WriteStation(stations map[string]*s.Station, line string, lineNumb int) err
 		X_axis: x,
 		Y_axis: y,
 	}
+
+	stationInMap, ok := stations[args[0]]
+	if ok {
+		return fmt.Errorf("Station is duplicated: %s, line: %d", stationInMap.Name, lineNumb)
+	}
+
 	stations[args[0]] = station
 
 	return nil
