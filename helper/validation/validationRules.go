@@ -30,7 +30,7 @@ func (v StationConnectionBlocks) Validate(path string) (bool, []error) {
 	if !strings.Contains(string(file), "connections:") {
 		errors = append(errors, fmt.Errorf("No connections block in file"))
 	}
-	return false, errors
+	return true, errors
 }
 
 func (v StartStationValidator) Validate(appData m.AppData) (bool, []error) {
