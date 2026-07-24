@@ -2,12 +2,12 @@ package scheduler
 
 import (
 	"fmt"
-	h "trains/helper/schedulingUtils"
+	s "trains/helper/schedulingUtils"
 	m "trains/models"
 )
 
 func MoveTrains(routes []m.Route, trainsNumb int) {
-	trains := h.TrainMaker(routes[0].Route[0], trainsNumb)
+	trains := s.TrainMaker(routes[0].Route[0], trainsNumb)
 	AssignRouteToTrain(trains, routes)
 
 	freeStations := map[string]bool{}

@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 	c "trains/cli"
-	p "trains/pathfinder"
 	s "trains/scheduler"
 )
 
@@ -12,6 +16,13 @@ func main() {
 	//go run . -feature stations.map waterloo euston 5
 	//go run . -feature jungle-desert.map jungle desert 5
 	//go run . -feature smallAndLarge.map small large 9
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer stop()
+
 	conf, err := c.FlagHandling()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
@@ -26,34 +37,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	res := p.BuildFlowGraph(&appData)
-	startID := res.StationToID[appData.StartingStation]
-	endID := res.StationToID[appData.EndingStation]
-	trains := appData.TrainNumb
+	//wg for 1 goroutine that will run the algorithm
+	var wg sync.WaitGroup
+	wg.Add(1)
+	done := make(chan struct{})
 
-	maxFlow := res.Graph.MaxFlow(startID, endID)
-	paths, err := res.ExtractPaths(maxFlow)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
-	}
-	distribution := s.DistributeTrains(paths, trains)
-	for _, v := range distribution {
-		fmt.Println(v)
-	}
+	//running algorithm in separate goroutine
+	go func() {
+		defer wg.Done()
+		defer close(done)
 
-	for i, path := range paths {
-		fmt.Printf("%d: ", i)
-		for _, st := range path {
-			fmt.Printf("%s ", st.Name)
-		}
-		fmt.Println()
-	}
+		s.AlgorithmRunner(ctx, appData)
+	}()
 
-	lines := s.Schedule(paths, trains)
+	select {
+	//if ctrl + c was pressed
+	case <-ctx.Done():
+		log.Println("Shutdown requested.")
+		//means that program wont exit until every goroutine that called Add(1) ti wg has called Done()
+		wg.Wait()
 
-	for _, line := range lines {
-		fmt.Println(line)
+	//when done is closed - exiting
+	case <-done:
+		log.Println("Program ended the work itself.")
 	}
 
+	log.Println("Exiting the program.")
 }

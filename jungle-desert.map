@@ -13,6 +13,7 @@ downtown,4,4
 metropolis,3,20
 industrial,1,18
 desert,9,0
+
 connections:
 jungle-grasslands
 mountain-treetop
