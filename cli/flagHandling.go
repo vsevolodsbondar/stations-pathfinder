@@ -8,14 +8,13 @@ import (
 )
 
 func FlagHandling() (m.FlagConfig, error) {
-	someFeature := flag.Bool("feature", false, "does additional stuff during the run.") //using it as a placeholder for some features to be activated with a flag
+	algorithm := flag.String("algorithm", "", "switches to Seva's or Anatolii's algorithm for pathfinding and scheduling. To use it: --algorithm=<seva or anatolii>")
 	flag.Parse()
 
 	args := flag.Args()
 
 	if len(args) != 4 {
-		err := fmt.Errorf("Usage: [flags] <network file> <start station> <end station> <train amount>\n")
-		return m.FlagConfig{}, err
+		return m.FlagConfig{}, fmt.Errorf("Usage: --algorithm=<seva or anatolii> <network file> <start station> <end station> <train amount>\n")
 	}
 
 	networkFile := args[0]
@@ -28,13 +27,15 @@ func FlagHandling() (m.FlagConfig, error) {
 
 	trains, err := strconv.Atoi(args[3])
 	if err != nil || trains <= 0 {
-		err := fmt.Errorf("Trains must be a positive integer")
-		return m.FlagConfig{}, err
+		return m.FlagConfig{}, fmt.Errorf("Trains must be a positive integer")
 	}
 
 	if trains > 20000 {
-		err := fmt.Errorf("Not a valid number of trains. Why do we need that much?:). Max: 20000")
-		return m.FlagConfig{}, err
+		return m.FlagConfig{}, fmt.Errorf("Not a valid number of trains. Why do we need that much?:). Max: 20000")
+	}
+
+	if *algorithm != "seva" && *algorithm != "anatolii" {
+		return m.FlagConfig{}, fmt.Errorf("Unknown algorithm to run.")
 	}
 
 	return m.FlagConfig{
@@ -42,6 +43,6 @@ func FlagHandling() (m.FlagConfig, error) {
 		StartingStation: start,
 		EndingStation:   end,
 		TrainNumb:       trains,
-		Feature:         *someFeature,
+		Algorithm:       *algorithm,
 	}, nil
 }

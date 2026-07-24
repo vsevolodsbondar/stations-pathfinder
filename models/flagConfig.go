@@ -5,5 +5,5 @@ type FlagConfig struct {
 	StartingStation string
 	EndingStation   string
 	TrainNumb       int
-	Feature         bool //placeholder
+	Algorithm       string
 }
