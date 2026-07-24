@@ -24,11 +24,25 @@ func (v StationConnectionBlocks) Validate(path string) (bool, []error) {
 	if err != nil {
 		errors = append(errors, err)
 	}
-	if !strings.Contains(string(file), "stations:") {
+	stations, _, ok := strings.Cut(string(file), "connections")
+	if !ok {
+		errors = append(errors, fmt.Errorf("No connections block in file"))
+	}
+	_, stations, ok = strings.Cut(stations, "stations")
+	if !ok {
 		errors = append(errors, fmt.Errorf("No stations block in file"))
 	}
-	if !strings.Contains(string(file), "connections:") {
-		errors = append(errors, fmt.Errorf("No connections block in file"))
+	lines := strings.Split(stations, "\n")
+	count := 0
+	for _, line := range lines {
+		isComment(line)
+		if line != "" {
+			count++
+		}
+		if count > 10000 {
+			errors = append(errors, fmt.Errorf("map contains more than 10000 stations"))
+			break
+		}
 	}
 	return true, errors
 }
