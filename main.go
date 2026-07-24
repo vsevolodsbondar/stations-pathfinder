@@ -9,7 +9,7 @@ import (
 	"sync"
 	"syscall"
 	c "trains/cli"
-	s "trains/scheduler"
+	s "trains/service"
 )
 
 func main() {
@@ -47,7 +47,20 @@ func main() {
 		defer wg.Done()
 		defer close(done)
 
-		s.AlgorithmRunner(ctx, appData)
+		switch conf.Algorithm {
+		case "seva":
+			err := s.Algorithm1Runner(ctx, appData)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error:", err)
+				os.Exit(1)
+			}
+		case "anatolii":
+			err := s.Algorithm2Runner(ctx, appData)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error:", err)
+				os.Exit(1)
+			}
+		}
 	}()
 
 	select {
