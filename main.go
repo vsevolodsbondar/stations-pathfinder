@@ -9,7 +9,7 @@ import (
 	"sync"
 	"syscall"
 	c "trains/cli"
-	s "trains/service"
+	s "trains/scheduler"
 )
 
 func main() {
