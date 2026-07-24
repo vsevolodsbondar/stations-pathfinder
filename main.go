@@ -37,8 +37,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	var wg sync.WaitGroup
 	//wg for 1 goroutine that will run the algorithm
+	var wg sync.WaitGroup
 	wg.Add(1)
 	done := make(chan struct{})
 
