@@ -25,8 +25,8 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 	con := false
 	errs := []error{}
 
-	val, valErrs := stConBlocks.Validate(path)
-	if !val {
+	_, valErrs := stConBlocks.Validate(path)
+	if valErrs != nil {
 		errs = append(errs, valErrs...)
 		return nil, errs
 	}
@@ -161,6 +161,14 @@ func WriteConnections(stations map[string]*s.Station, connections []string) erro
 
 		if from == to {
 			return fmt.Errorf("Invalid connection. Can't be same station: %s", connection)
+		}
+		_, ok := stations[from]
+		if !ok {
+			return fmt.Errorf("Invalid connection. Station does not exist: Connection: %s, Station: %s", connection, from)
+		}
+		_, ok = stations[to]
+		if !ok {
+			return fmt.Errorf("Invalid connection. Station does not exist: Connection: %s, Station: %s", connection, to)
 		}
 
 		stations[from].Connections = append(stations[from].Connections, stations[to])
