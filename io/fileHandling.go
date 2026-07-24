@@ -26,7 +26,7 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 	errs := []error{}
 
 	_, valErrs := stConBlocks.Validate(path)
-	if valErrs != nil {
+	if len(valErrs) != 0 {
 		errs = append(errs, valErrs...)
 		return nil, errs
 	}
