@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"fmt"
+	"strings"
 	m "trains/models"
 )
 
@@ -146,4 +147,66 @@ func MoveActiveTrains(
 	*active = newActive
 
 	return moves
+}
+
+// Schedule simulates the complete train movement process. It distributes trains
+// across the available paths, launches them, moves them turn by turn, and
+// returns the list of movements for each simulation step.
+func Schedule(paths [][]*m.Station, trainCount int) []string {
+
+	assigned := DistributeTrains(paths, trainCount)
+
+	launched := make([]int, len(paths))
+	occupied := make(map[*m.Station]bool)
+	active := []Train{}
+	nextID := 1
+
+	result := []string{}
+
+	for {
+
+		moves := MoveActiveTrains(&active, paths, occupied)
+
+		LaunchTrains(
+			&active,
+			paths,
+			assigned,
+			launched,
+			occupied,
+			&nextID,
+		)
+
+		for _, train := range active {
+			if train.Position == 1 {
+				moves = append(moves,
+					fmt.Sprintf("T%d-%s",
+						train.ID,
+						paths[train.PathID][1].Name,
+					))
+			}
+		}
+
+		if len(moves) > 0 {
+			result = append(result, strings.Join(moves, " "))
+		}
+
+		done := true
+
+		if len(active) > 0 {
+			done = false
+		}
+
+		for i := range assigned {
+			if launched[i] < assigned[i] {
+				done = false
+				break
+			}
+		}
+
+		if done {
+			break
+		}
+	}
+
+	return result
 }
