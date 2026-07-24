@@ -28,7 +28,7 @@ func (v StationConnectionBlocks) Validate(path string) (bool, []error) {
 	if !ok {
 		errors = append(errors, fmt.Errorf("No connections block in file"))
 	}
-	_, stations, ok = strings.Cut(string(file), "stations")
+	_, stations, ok = strings.Cut(stations, "stations")
 	if !ok {
 		errors = append(errors, fmt.Errorf("No stations block in file"))
 	}
