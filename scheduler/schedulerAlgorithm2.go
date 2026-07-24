@@ -32,3 +32,43 @@ func DistributeTrains(paths [][]*m.Station, trainCount int) []int {
 	}
 	return assigned
 }
+
+func LaunchTrains(
+	active *[]Train,
+	paths [][]*m.Station,
+	assigned []int,
+	launched []int,
+	occupied map[*m.Station]bool,
+	nextID *int,
+) {
+
+	for pathID, path := range paths {
+
+		if launched[pathID] >= assigned[pathID] {
+			continue
+		}
+
+		if len(path) < 2 {
+			continue
+		}
+
+		first := path[1]
+
+		if first != path[len(path)-1] && occupied[first] {
+			continue
+		}
+
+		*active = append(*active, Train{
+			ID:       *nextID,
+			PathID:   pathID,
+			Position: 1,
+		})
+
+		if first != path[len(path)-1] {
+			occupied[first] = true
+		}
+
+		launched[pathID]++
+		(*nextID)++
+	}
+}
