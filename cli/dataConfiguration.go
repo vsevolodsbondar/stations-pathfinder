@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	val "trains/helper/validation"
 	io "trains/io"
 	m "trains/models"
@@ -11,7 +10,6 @@ func DataConfiguration(conf m.FlagConfig) (m.AppData, []error) {
 	appData := m.AppData{}
 
 	stations, errrs := (io.HandleInitialInputFile(conf.NetworkMapPath))
-	fmt.Println(stations)
 	if errrs != nil {
 		return appData, errrs
 	}
