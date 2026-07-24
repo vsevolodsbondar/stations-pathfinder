@@ -1,0 +1,29 @@
+# start: s
+# end: e
+# turns: 9
+# trains: 10
+# trap: two length-4 first paths exist; picking s-a-b-c-e blocks the second path, while s-a-b-u-e is optimal with the length-5 path through c.
+# optimal path lengths: 4, 5.
+
+stations:
+s,0,0
+e,1,0
+a,2,0
+b,3,0
+c,4,0
+u,5,0
+q1,6,0
+q2,7,0
+q3,8,0
+
+connections:
+s-a
+a-b
+b-c
+c-e
+b-u
+u-e
+s-q1
+q1-q2
+q2-q3
+q3-c

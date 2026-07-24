@@ -1,0 +1,10 @@
+
+stations:
+start,0,0
+end,1,1
+a999,2,2
+
+connections:
+start-a999
+a99901-a999
+a999-end
