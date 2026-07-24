@@ -26,12 +26,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	//res := p.BigFuckingSearch(appData)
 	res := p.BuildFlowGraph(&appData)
+	startID := res.StationToID[appData.StartingStation]
+	endID := res.StationToID[appData.EndingStation]
+	trains := appData.TrainNumb
 
-	maxFlow := res.Graph.MaxFlow(res.StationToID[appData.StartingStation], res.StationToID[appData.EndingStation])
+	maxFlow := res.Graph.MaxFlow(startID, endID)
 	paths, err := res.ExtractPaths(maxFlow)
-	distribution := s.DistributeTrains(paths, appData.TrainNumb)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
+	distribution := s.DistributeTrains(paths, trains)
 	for _, v := range distribution {
 		fmt.Println(v)
 	}
@@ -42,6 +48,12 @@ func main() {
 			fmt.Printf("%s ", st.Name)
 		}
 		fmt.Println()
+	}
+
+	lines := s.Schedule(paths, trains)
+
+	for _, line := range lines {
+		fmt.Println(line)
 	}
 
 }
