@@ -8,12 +8,12 @@ import (
 	p "trains/pathfinder"
 )
 
-func TestShouldFindMoreThanOneRouteFor2Algorithm1(t *testing.T) {
+func TestShouldFindMoreThanOneRouteFor3Algorithm1(t *testing.T) {
 	config := m.FlagConfig{
 		NetworkMapPath:  "./testData/waterloo.txt",
 		StartingStation: "waterloo",
 		EndingStation:   "st_pancras",
-		TrainNumb:       2,
+		TrainNumb:       3,
 	}
 
 	appData, _ := c.DataConfiguration(config)
@@ -36,12 +36,12 @@ func TestShouldFindMoreThanOneRouteFor2Algorithm1(t *testing.T) {
 
 }
 
-func TestShouldFindMoreThanOneRouteFor2Algorithm2(t *testing.T) {
+func TestShouldFindMoreThanOneRouteFor3Algorithm2(t *testing.T) {
 	config := m.FlagConfig{
 		NetworkMapPath:  "./testData/waterloo.txt",
 		StartingStation: "waterloo",
 		EndingStation:   "st_pancras",
-		TrainNumb:       2,
+		TrainNumb:       3,
 	}
 
 	appData, _ := c.DataConfiguration(config)
