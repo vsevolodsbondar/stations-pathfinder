@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"sort"
 	m "trains/models"
 )
 
@@ -113,6 +114,9 @@ func (g *FlowGraph) AddRail(from, to, capacity int) {
 
 // BFS finds an augmenting path using breadth-first search.
 func (g *FlowGraph) BFS(start, end int) ([]Parent, bool) {
+	if len(g.Rails) == 0 {
+		return nil, false
+	}
 	parents := make([]Parent, len(g.Rails))
 	visited := make([]bool, len(g.Rails))
 	visited[start] = true
@@ -173,7 +177,7 @@ func (g *FlowGraph) MaxFlow(start, end int) int {
 	return maxFlow
 }
 
-// ExtractPaths builds railway paths from the computed flow.
+// ExtractPaths builds railway paths from the computed flow and sorts them from shortest to longest.
 func (n *FlowNetwork) ExtractPaths(pathCount int) ([][]*m.Station, error) {
 	paths := make([][]*m.Station, 0, pathCount)
 	startIn := n.StationToID[n.Start]
@@ -205,5 +209,8 @@ func (n *FlowNetwork) ExtractPaths(pathCount int) ([][]*m.Station, error) {
 		path = append(path, n.End)
 		paths = append(paths, path)
 	}
+	sort.Slice(paths, func(i, j int) bool {
+		return len(paths[i]) < len(paths[j])
+	})
 	return paths, nil
 }

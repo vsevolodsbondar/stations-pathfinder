@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	c "trains/cli"
-	h "trains/helper/routeUtils"
 	p "trains/pathfinder"
 	s "trains/scheduler"
 )
@@ -27,11 +26,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	//res := p.BigFuckingSearch(appData)
 	res := p.BuildFlowGraph(&appData)
+	startID := res.StationToID[appData.StartingStation]
+	endID := res.StationToID[appData.EndingStation]
+	trains := appData.TrainNumb
 
-	maxFlow := res.Graph.MaxFlow(res.StationToID[appData.StartingStation], res.StationToID[appData.EndingStation])
+	maxFlow := res.Graph.MaxFlow(startID, endID)
 	paths, err := res.ExtractPaths(maxFlow)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
+	distribution := s.DistributeTrains(paths, trains)
+	for _, v := range distribution {
+		fmt.Println(v)
+	}
 
 	for i, path := range paths {
 		fmt.Printf("%d: ", i)
@@ -39,6 +48,12 @@ func main() {
 			fmt.Printf("%s ", st.Name)
 		}
 		fmt.Println()
+	}
+
+	lines := s.Schedule(paths, trains)
+
+	for _, line := range lines {
+		fmt.Println(line)
 	}
 
 }
