@@ -38,16 +38,29 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
+	//wg for 1 goroutine that will run the algorithm
 	wg.Add(1)
+	done := make(chan struct{})
 
+	//running algorithm in separate goroutine
 	go func() {
 		defer wg.Done()
+		defer close(done)
+
 		s.AlgorithmRunner(ctx, appData)
 	}()
 
-	<-ctx.Done()
+	select {
+	//if ctrl + c was pressed
+	case <-ctx.Done():
+		log.Println("Shutdown requested.")
+		//means that program wont exit until every goroutine that called Add(1) ti wg has called Done()
+		wg.Wait()
 
-	log.Println("Shutdown requested.")
+	//when done is closed - exiting
+	case <-done:
+		log.Println("Program ended the work itself.")
+	}
 
-	wg.Wait()
+	log.Println("Exiting the program.")
 }
