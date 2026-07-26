@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io"
 	"os"
-	"trains/models"
 )
 
 func CaptureStdout(fn func() error) (string, error) {
@@ -21,27 +20,6 @@ func CaptureStdout(fn func() error) (string, error) {
 	}()
 
 	err = fn() //can be ommited, moslty I don't react on errors in tests
-
-	w.Close()
-
-	var buf bytes.Buffer
-	io.Copy(&buf, r)
-
-	return buf.String(), nil
-}
-
-func CaptureStdout2(fn func() (models.FlagConfig, error)) (string, error) {
-	old := os.Stdout
-
-	r, w, err := os.Pipe()
-	if err != nil {
-		return "", err
-	}
-
-	os.Stdout = w
-	defer func() {
-		os.Stdout = old
-	}()
 
 	w.Close()
 
