@@ -48,7 +48,7 @@ func TestShouldFindOneRouteFor1Algorithm2(t *testing.T) {
 	maxFlow := res.Graph.MaxFlow(startID, endID)
 	paths, _ := res.ExtractPaths(maxFlow)
 
-	found2Routes := false
+	found1Route := false
 	for _, v := range paths {
 		route := ""
 		for _, st := range v {
@@ -56,11 +56,11 @@ func TestShouldFindOneRouteFor1Algorithm2(t *testing.T) {
 		}
 		fmt.Println(route)
 		if len(v) >= 2 {
-			found2Routes = true
+			found1Route = true
 		}
 	}
 
-	if !found2Routes {
+	if !found1Route {
 		t.Errorf("Should find at least 2 routes.")
 	}
 }
