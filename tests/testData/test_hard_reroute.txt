@@ -1,0 +1,24 @@
+# start: s
+# end: e
+# turns: 6
+# trains: 8
+# trap: first greedy path s-a-c-e blocks the second path.
+# optimal requires rerouting to s-a-d-e and s-b-c-e.
+# optimal path lengths: 3, 3.
+
+stations:
+s,0,0
+e,1,0
+a,2,0
+b,3,0
+c,4,0
+d,5,0
+
+connections:
+s-a
+a-c
+c-e
+a-d
+d-e
+s-b
+b-c

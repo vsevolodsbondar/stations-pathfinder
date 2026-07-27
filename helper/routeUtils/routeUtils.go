@@ -116,6 +116,10 @@ func FindUniqueRouteSets(routes []m.Route) [][]m.Route {
 func BestRoutes(routeSets [][]m.Route, trains int) []m.Route {
 	mostEffectiveIndependentRoutes := []m.Route{}
 
+	if trains == 1 {
+		return []m.Route{bestSingleRoute(routeSets)}
+	}
+
 	maxIndependentRoutes := 0
 	for _, v := range routeSets {
 		if len(v) > maxIndependentRoutes {
@@ -167,20 +171,20 @@ func BestRoutes(routeSets [][]m.Route, trains int) []m.Route {
 	return mostEffectiveIndependentRoutes
 }
 
-// not used currently
-func BestSingleRoute(routeSets [][]m.Route) []m.Route {
-	shortestRoute := []m.Route{}
+func bestSingleRoute(routeSets [][]m.Route) m.Route {
+	shortestRoute := m.Route{}
 	distance := math.MaxFloat64
 	edges := math.MaxInt
+
 	for i := 0; i < len(routeSets); i++ {
 		for j := 0; j < len(routeSets[i]); j++ {
 			if len(routeSets[i][j].Route) < edges {
-				shortestRoute = append(shortestRoute, routeSets[i][j])
+				shortestRoute = routeSets[i][j]
 				distance = routeSets[i][j].Distance
 				edges = len(routeSets[i][j].Route)
 			} else if len(routeSets[i][j].Route) == edges {
 				if routeSets[i][j].Distance < distance {
-					shortestRoute = append(shortestRoute, routeSets[i][j])
+					shortestRoute = routeSets[i][j]
 					distance = routeSets[i][j].Distance
 				}
 			}

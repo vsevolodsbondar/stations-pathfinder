@@ -199,7 +199,7 @@ func (v ConnectionLineValidator) Validate(line string) (bool, []error) {
 		_, error := validName(args[1])
 		if error != nil {
 			valid = false
-			errs = append(errs, err)
+			errs = append(errs, error)
 		}
 	}
 
