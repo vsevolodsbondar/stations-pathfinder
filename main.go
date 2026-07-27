@@ -16,6 +16,7 @@ func main() {
 	//go run . -feature stations.map waterloo euston 5
 	//go run . -feature jungle-desert.map jungle desert 5
 	//go run . -algorithm=seva smallAndLarge.map small large 9
+	//go run . -algorithm=seva ./tests/testData/tricky2_test.txt start end 1
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
