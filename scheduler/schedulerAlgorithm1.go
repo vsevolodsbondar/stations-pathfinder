@@ -8,7 +8,9 @@ import (
 
 func MoveTrains(routes []m.Route, trainsNumb int) {
 	trains := s.TrainMaker(routes[0].Route[0], trainsNumb)
+
 	AssignRouteToTrain(trains, routes)
+	startStation := routes[0].Route[0]
 
 	freeStations := map[string]bool{}
 
@@ -21,6 +23,7 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 
 	for !allFinished(trains) {
 		turnString := ""
+		startedRoutes := map[int]bool{}
 
 		for i := range trains {
 			if trains[i].Finished {
@@ -34,7 +37,13 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 				continue
 			}
 
+			//to check if i moved a train on assigned root already
 			prevStation := trains[i].CurrStation
+			if prevStation == startStation {
+				if startedRoutes[trains[i].Route.ID] {
+					continue
+				}
+			}
 
 			// freeing prev station
 			_, exists := freeStations[prevStation]
@@ -48,6 +57,10 @@ func MoveTrains(routes []m.Route, trainsNumb int) {
 			}
 
 			_, info := trains[i].Move()
+			if prevStation == startStation {
+				startedRoutes[trains[i].Route.ID] = true
+			}
+
 			turnString += info
 		}
 
