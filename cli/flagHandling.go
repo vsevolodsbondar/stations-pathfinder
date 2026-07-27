@@ -30,7 +30,7 @@ func FlagHandling() (m.FlagConfig, error) {
 		return m.FlagConfig{}, fmt.Errorf("Trains must be a positive integer")
 	}
 
-	if trains > 20000 {
+	if trains > 200000 {
 		return m.FlagConfig{}, fmt.Errorf("Not a valid number of trains. Why do we need that much?:). Max: 20000")
 	}
 
