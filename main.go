@@ -13,9 +13,6 @@ import (
 )
 
 func main() {
-	//go run . -feature stations.map waterloo euston 5
-	//go run . -feature jungle-desert.map jungle desert 5
-	//go run . -algorithm=seva smallAndLarge.map small large 9
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
