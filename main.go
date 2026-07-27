@@ -60,6 +60,12 @@ func main() {
 				fmt.Fprintln(os.Stderr, "Error:", err)
 				os.Exit(1)
 			}
+		default:
+			err := s.Algorithm2Runner(ctx, appData)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error:", err)
+				os.Exit(1)
+			}
 		}
 	}()
 
