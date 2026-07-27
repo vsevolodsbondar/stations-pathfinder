@@ -66,7 +66,7 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 		switch {
 		case st:
 			ok, validationErrs := stValidator.Validate(line)
-			if validationErrs != nil {
+			if len(validationErrs) != 0 {
 				for _, err := range validationErrs {
 					errs = append(errs,
 						fmt.Errorf("Invalid station (%s), line %d: %w", line, lineNumb, err))
