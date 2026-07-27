@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	//go run . --algorithm=seva ./tests/testData/tricky2_test.txt start end 1
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
