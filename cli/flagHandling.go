@@ -34,7 +34,7 @@ func FlagHandling() (m.FlagConfig, error) {
 		return m.FlagConfig{}, fmt.Errorf("Not a valid number of trains. Why do we need that much?:). Max: 20000")
 	}
 
-	if *algorithm != "seva" && *algorithm != "anatolii" {
+	if *algorithm != "seva" && *algorithm != "anatolii" && *algorithm != "" {
 		return m.FlagConfig{}, fmt.Errorf("Unknown algorithm to run.")
 	}
 
