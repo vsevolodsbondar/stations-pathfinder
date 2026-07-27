@@ -212,5 +212,10 @@ func (n *FlowNetwork) ExtractPaths(pathCount int) ([][]*m.Station, error) {
 	sort.Slice(paths, func(i, j int) bool {
 		return len(paths[i]) < len(paths[j])
 	})
+
+	if len(paths) == 0 {
+		return nil, fmt.Errorf("There is no route that reaches ending station.")
+	}
+
 	return paths, nil
 }

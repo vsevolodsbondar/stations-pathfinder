@@ -6,7 +6,9 @@
 stations:
 start,1,1
 end,2,2
-isolated,3,3end
+isolated,3,3
+some,2,3
 
 connections:
 start-isolated
+end-some

@@ -10,7 +10,6 @@ import (
 
 type StartStationValidator struct{}
 type EndStationValidator struct{}
-type StartEndValidator struct{}
 type UniqueCoordinatesForStation struct{}
 type StationLineValidator struct{}
 type ConnectionLineValidator struct{}
