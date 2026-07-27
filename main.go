@@ -13,10 +13,6 @@ import (
 )
 
 func main() {
-	//go run . -feature stations.map waterloo euston 5
-	//go run . -algorithm=seva jungle-desert.map jungle desert 10
-	//go run . -feature smallAndLarge.map small large 9
-	//go run . -algorithm=seva terminus.map beginning terminus 20
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
