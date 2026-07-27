@@ -12,7 +12,7 @@ import (
 	s "trains/service"
 )
 
-func TestShouldScheduleTrainsIn4TurnsForAlgorithm1(t *testing.T) {
+func TestShouldScheduleTrainsIn6TurnsFor4TrainsAlgorithm1(t *testing.T) {
 	config := m.FlagConfig{
 		NetworkMapPath:  "./testData/4_test.txt",
 		StartingStation: "two",
@@ -63,7 +63,7 @@ func TestShouldScheduleTrainsIn4TurnsForAlgorithm1(t *testing.T) {
 	}
 }
 
-func TestShouldScheduleTrainsIn4TurnsForAlgorithm2(t *testing.T) {
+func TestShouldScheduleTrainsIn6TurnsFor4TrainsAlgorithm2(t *testing.T) {
 	config := m.FlagConfig{
 		NetworkMapPath:  "./testData/4_test.txt",
 		StartingStation: "two",
