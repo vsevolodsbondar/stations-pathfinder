@@ -80,7 +80,7 @@ func HandleInitialInputFile(path string) (map[string]*s.Station, []error) {
 			}
 		case con:
 			ok, validationErrs := conValidator.Validate(line)
-			if validationErrs != nil {
+			if len(validationErrs) != 0 {
 				for _, err := range validationErrs {
 					errs = append(errs,
 						fmt.Errorf("Invalid connection: %s, line: %d: %w", line, lineNumb, err))

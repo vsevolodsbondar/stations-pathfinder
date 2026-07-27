@@ -23,7 +23,7 @@ func TestShouldHaveErrorWhenInvalidStationName(t *testing.T) {
 
 	fmt.Println("Output", output)
 
-	if !strings.Contains(output, "Error: Invalid station (Orange_junction%,6,1), line 11: Not valid symbol in name: O.") {
+	if !strings.Contains(output, "Error: Invalid station (Orange_junction^,6,1), line 11: Not valid symbol in name: O.") {
 		t.Fatalf("expected error message\n%s", output)
 	}
 }

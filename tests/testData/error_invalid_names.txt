@@ -8,12 +8,12 @@ stations:
 bond_square,20,6
 space_port,1,11
 apple_avenue,7,7
-Orange_junction%,6,1
+Orange_junction^,6,1
 
 connections:
 bond_square-apple_avenue
-apple_avenue-Orange_junction%
-Orange_junction%-space_port
+apple_avenue-Orange_junction^
+Orange_junction^-space_port
 
 
 #T1-apple_avenue
