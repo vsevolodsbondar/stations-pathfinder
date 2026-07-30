@@ -15,23 +15,26 @@ func Algorithm1Runner(ctx context.Context, appData m.AppData) error {
 	log.Println("Running Seva's algorithm.")
 	log.Println("Starting to search for paths.")
 
-	routeDone := make(chan struct{})
+	errCh := make(chan error, 1)
 	var best []m.Route
-	go func() error {
+	go func() {
 		routeSets, err := p.DFSRangedRouteSets(appData)
 		if err != nil {
-			return err
+			errCh <- err
+			return
 		}
-		best = r.BestRoutes(routeSets, appData.TrainNumb)
-		log.Println("Found best paths.")
-		close(routeDone)
 
-		return nil
+		best = r.BestRoutes(routeSets, appData.TrainNumb)
+		errCh <- nil
+		log.Println("Found best paths.")
 	}()
 
 	//waiting for either completion or timeout
 	select {
-	case <-routeDone:
+	case err := <-errCh:
+		if err != nil {
+			return err
+		}
 	case <-ctx.Done():
 		fmt.Println("Shutdown performed before found all paths.")
 		return nil
@@ -62,28 +65,33 @@ func Algorithm2Runner(ctx context.Context, appData m.AppData) error {
 	log.Println("Starting to search for paths.")
 
 	trains := appData.TrainNumb
-	routeDone := make(chan struct{})
+	errCh := make(chan error, 1)
 	var paths [][]*m.Station
 
-	go func() error {
+	go func() {
+		var err error
+
 		res := p.BuildFlowGraph(&appData)
 		startID := res.StationToID[appData.StartingStation]
 		endID := res.StationToID[appData.EndingStation]
 
 		maxFlow := res.Graph.MaxFlow(startID, endID)
-		var err error
+
 		paths, err = res.ExtractPaths(maxFlow)
 		if err != nil {
-			return err
+			errCh <- err
+			return
 		}
-		log.Println("Found best paths.")
-		close(routeDone)
 
-		return nil
+		log.Println("Found best paths.")
+		errCh <- nil
 	}()
 
 	select {
-	case <-routeDone:
+	case err := <-errCh:
+		if err != nil {
+			return err
+		}
 	case <-ctx.Done():
 		fmt.Println("Shutdown performed before found all paths.")
 		return nil
@@ -93,6 +101,8 @@ func Algorithm2Runner(ctx context.Context, appData m.AppData) error {
 
 	moveDone := make(chan struct{})
 	go func() {
+		defer close(moveDone)
+
 		log.Println("Starting to move trains.")
 		s.DistributeTrains(paths, trains)
 		lines := s.Schedule(paths, trains)
@@ -100,7 +110,6 @@ func Algorithm2Runner(ctx context.Context, appData m.AppData) error {
 		for _, line := range lines {
 			fmt.Println(line)
 		}
-		close(moveDone)
 	}()
 
 	select {
