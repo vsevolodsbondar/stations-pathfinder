@@ -38,32 +38,26 @@ func main() {
 	//wg for 1 goroutine that will run the algorithm
 	var wg sync.WaitGroup
 	wg.Add(1)
-	done := make(chan struct{})
+	resultCh := make(chan error, 1)
 
 	//running algorithm in separate goroutine
 	go func() {
 		defer wg.Done()
-		defer close(done)
+		defer close(resultCh)
+
+		var err error
 
 		switch conf.Algorithm {
 		case "seva":
-			err := s.Algorithm1Runner(ctx, appData)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "Error:", err)
-				os.Exit(1)
-			}
+			err = s.Algorithm1Runner(ctx, appData)
 		case "anatolii":
-			err := s.Algorithm2Runner(ctx, appData)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "Error:", err)
-				os.Exit(1)
-			}
+			err = s.Algorithm2Runner(ctx, appData)
 		default:
-			err := s.Algorithm2Runner(ctx, appData)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "Error:", err)
-				os.Exit(1)
-			}
+			err = s.Algorithm2Runner(ctx, appData)
+		}
+
+		if err != nil {
+			resultCh <- err
 		}
 	}()
 
@@ -74,8 +68,13 @@ func main() {
 		//means that program wont exit until every goroutine that called Add(1) ti wg has called Done()
 		wg.Wait()
 
-	//when done is closed - exiting
-	case <-done:
+	//when resultCh is closed - exiting
+	case err := <-resultCh:
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err)
+			os.Exit(1)
+		}
+
 		log.Println("Program ended the work itself.")
 	}
 
